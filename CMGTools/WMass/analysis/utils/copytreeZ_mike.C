@@ -3,11 +3,12 @@ void copytreeZ_mike() {
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
-  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
+  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
+  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
   
   TString fZana_str[7] = {
     "root://eoscms//"+root_folder+"WJetsLL/ZTreeProducer_tree.root",
-    "root://eoscms//"+root_folder+"DYJetsMM/ZTreeProducer_tree.root",
+    "root://eoscms//"+root_folder+"DYMM/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"TTJets/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/ZZ/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/WW/ZTreeProducer_tree.root",
@@ -16,20 +17,20 @@ void copytreeZ_mike() {
   };  
   TString fZana_RecoSkimmed_str[7] = {
     root_folder+"WJetsLL/ZTreeProducer_tree_RecoSkimmed.root",
-    root_folder+"DYJetsMM/ZTreeProducer_tree_RecoSkimmed.root",
+    root_folder+"DYMM/ZTreeProducer_tree_SymmCuts_RecoSkimmed.root",
     root_folder+"TTJets/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/ZZ/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/WW/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/WZ/ZTreeProducer_tree_RecoSkimmed.root",
-    root_folder+"DATA/ZTreeProducer_tree_RecoSkimmed.root"
+    root_folder+"DATA/ZTreeProducer_tree_SymmCuts_RecoSkimmed.root"
   };  
 
   // int sample = 0;
   for(int sample=0; sample<7; sample++){
     
     if(
-       !fZana_RecoSkimmed_str[sample].Contains("DYJetsMM")
-       // && !fZana_RecoSkimmed_str[sample].Contains("DATA")
+       !fZana_RecoSkimmed_str[sample].Contains("DYMM")
+       && !fZana_RecoSkimmed_str[sample].Contains("DATA")
        ) continue;
     
     TFile *oldfile = TFile::Open(Form("%s",fZana_str[sample].Data()));
@@ -84,11 +85,17 @@ void copytreeZ_mike() {
     TString cutSig = "Z_pt>0";
     filenameoutSig.ReplaceAll("_RecoSkimmed","_MikeRecoSkimmed");
     
+    // cutSig+="&& evtHasGoodVtx && evtHasTrg && Z_mass>50 && MuPos_charge != MuNeg_charge && \
+    // ( (MuPosTrg && TMath::Abs(MuPos_eta)<2.1 &&  MuPos_pt>25 && MuPosIsTight && MuPosRelIso<0.12 && MuPos_dxy<0.02 \
+    // && TMath::Abs(MuNeg_eta)<2.4 && MuNeg_pt>10 ) \
+    // || ( MuNegTrg && TMath::Abs(MuNeg_eta)<2.1 &&  MuNeg_pt>25 && MuNegIsTight && MuNegRelIso<0.12 && MuNeg_dxy<0.02 \
+    // && TMath::Abs(MuPos_eta)<2.4 && MuPos_pt>10 ) )";
     cutSig+="&& evtHasGoodVtx && evtHasTrg && Z_mass>50 && MuPos_charge != MuNeg_charge && \
-    ( (MuPosTrg && TMath::Abs(MuPos_eta)<2.1 &&  MuPos_pt>25 && MuPosIsTight && MuPosRelIso<0.12 && MuPos_dxy<0.02 \
-    && TMath::Abs(MuNeg_eta)<2.4 && MuNeg_pt>10 ) \
-    || ( MuNegTrg && TMath::Abs(MuNeg_eta)<2.1 &&  MuNeg_pt>25 && MuNegIsTight && MuNegRelIso<0.12 && MuNeg_dxy<0.02 \
-    && TMath::Abs(MuPos_eta)<2.4 && MuPos_pt>10 ) )";
+    MuPosTrg && TMath::Abs(MuPos_eta)<2.1 &&  MuPos_pt>20 && MuPosIsTight && MuPosRelIso<0.12 && MuPos_dxy<0.02 \
+    && MuNegTrg && TMath::Abs(MuNeg_eta)<2.1 &&  MuNeg_pt>20 && MuNegIsTight && MuNegRelIso<0.12 && MuNeg_dxy<0.02 \
+    ";
+    // && TMath::Abs(MuPos_eta)<2.4 && MuPos_pt>10 ) \
+    // && TMath::Abs(MuNeg_eta)<2.4 && MuNeg_pt>10 ) \
 
     
     cout << "creating file " << Form("%s",filenameoutSig.Data()) << endl;

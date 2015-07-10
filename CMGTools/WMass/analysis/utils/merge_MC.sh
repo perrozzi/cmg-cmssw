@@ -41,7 +41,7 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
         printf "%s "  "${ARRAY[@]}"
         echo ""
         # echo ${ARRAY}
-        read -p " PRESS 1 TO EXIT, 0 TO CONTINUE? : " n1
+        read -p " PRESS 1 TO EXIT, 0 TO CONTINUE AND MERGE : " n1
         if [[ ${n1} == 1 ]]
         then
           exit 1
@@ -49,7 +49,11 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
         fi
       fi
       hadd -f ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
-      rm ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
+      # read -p " DELETE THE SPLITTED CHUNKS? PRESS 1 TO DELETE, 0 TO SKIP : " n2
+      # if [[ ${n2} == 1 ]]
+      # then
+        # rm ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
+      # fi
       rm -rf ${1}/test_numbers_${samples[id_sample]}/LSFJOB_*
       rm -rf ${1}/test_numbers_${samples[id_sample]}/*.out
     fi

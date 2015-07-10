@@ -351,7 +351,7 @@ void test_allEvt::Init(TTree *tree)
   // fChain->SetBranchAddress("nMuons", &nMuons, &b_nMuons);
   // fChain->SetBranchAddress("nTrgMuons", &nTrgMuons, &b_nTrgMuons);
   // fChain->SetBranchAddress("noTrgExtraMuonsLeadingPt", &noTrgExtraMuonsLeadingPt, &b_noTrgExtraMuonsLeadingPt);
-  // fChain->SetBranchAddress("Z_pt", &Z_pt, &b_Z_pt);
+  fChain->SetBranchAddress("Z_pt", &Z_pt, &b_Z_pt);
   // fChain->SetBranchAddress("Z_rap", &Z_rap, &b_Z_rap);
   // fChain->SetBranchAddress("Z_phi", &Z_phi, &b_Z_phi);
   // fChain->SetBranchAddress("Z_mass", &Z_mass, &b_Z_mass);
@@ -367,8 +367,8 @@ void test_allEvt::Init(TTree *tree)
   fChain->SetBranchAddress("ZGen_PostFSR_phi", &ZGen_PostFSR_phi, &b_ZGen_PostFSR_phi);
   fChain->SetBranchAddress("ZGen_PostFSR_mass", &ZGen_PostFSR_mass, &b_ZGen_PostFSR_mass);
   // fChain->SetBranchAddress("ZGen_mt", &ZGen_mt, &b_ZGen_mt);
-  // fChain->SetBranchAddress("MuPos_pt", &MuPos_pt, &b_MuPos_pt);
-  // fChain->SetBranchAddress("MuPos_eta", &MuPos_eta, &b_MuPos_eta);
+  fChain->SetBranchAddress("MuPos_pt", &MuPos_pt, &b_MuPos_pt);
+  fChain->SetBranchAddress("MuPos_eta", &MuPos_eta, &b_MuPos_eta);
   // fChain->SetBranchAddress("MuPos_phi", &MuPos_phi, &b_MuPos_phi);
   // fChain->SetBranchAddress("MuPos_mass", &MuPos_mass, &b_MuPos_mass);
   // fChain->SetBranchAddress("MuPos_charge", &MuPos_charge, &b_MuPos_charge);
@@ -388,8 +388,8 @@ void test_allEvt::Init(TTree *tree)
   fChain->SetBranchAddress("MuPosGenStatus1_mass", &MuPosGenStatus1_mass, &b_MuPosGenStatus1_mass);
   // fChain->SetBranchAddress("MuPosGenStatus1_charge", &MuPosGenStatus1_charge, &b_MuPosGenStatus1_charge);
   // fChain->SetBranchAddress("FSRWeight", &FSRWeight, &b_FSRWeight);
-  // fChain->SetBranchAddress("MuNeg_pt", &MuNeg_pt, &b_MuNeg_pt);
-  // fChain->SetBranchAddress("MuNeg_eta", &MuNeg_eta, &b_MuNeg_eta);
+  fChain->SetBranchAddress("MuNeg_pt", &MuNeg_pt, &b_MuNeg_pt);
+  fChain->SetBranchAddress("MuNeg_eta", &MuNeg_eta, &b_MuNeg_eta);
   // fChain->SetBranchAddress("MuNeg_phi", &MuNeg_phi, &b_MuNeg_phi);
   // fChain->SetBranchAddress("MuNeg_mass", &MuNeg_mass, &b_MuNeg_mass);
   // fChain->SetBranchAddress("MuNeg_charge", &MuNeg_charge, &b_MuNeg_charge);

@@ -1,7 +1,8 @@
 #Load all analyzers
 from CMGTools.WMass.analyzers.CoreModule_53X_cff import *
 
-sequence = cfg.Sequence(CoreWZsequence)
+# sequence = cfg.Sequence(CoreWZsequence)
+sequence = cfg.Sequence(CoreZsequence)
 
 
 from CMGTools.H2TauTau.proto.samples.ewk import DYJets

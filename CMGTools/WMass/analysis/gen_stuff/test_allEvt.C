@@ -69,7 +69,15 @@ void test_allEvt::Loop()
         && TMath::Abs(MuPosGenStatus1_eta)<2.5
         && TMath::Abs(MuNegGenStatus1_eta)<2.5
         ){
-          
+      
+      if(Z_pt>0 && MuPos_pt>20 && TMath::Abs(MuPos_eta)<2.4 && MuNeg_pt>20 && TMath::Abs(MuNeg_eta)<2.4 ){
+        double zpt_res = (ZGen_PostFSR_pt-Z_pt);
+        // cout << "ZGen_PostFSR_pt= " << ZGen_PostFSR_pt << " zpt_res= " << zpt_res << endl;
+        common_stuff::plot2D("hzptres_vs_avemupt", ZGen_PostFSR_pt,(MuNeg_pt+MuPos_pt)/2, 1, h_2d, 200,0,50, 500,0,100);
+        common_stuff::plot2D("hzptres_vs_zpt", ZGen_PostFSR_pt,zpt_res, 1, h_2d, 200,0,50, 500,-10,10);
+        common_stuff::plot2D("hzptres_vs_zpt_rel", ZGen_PostFSR_pt,zpt_res/ZGen_PostFSR_pt, 1, h_2d, 200,0,50, 500,-10,10);
+      }
+      
       muPosGen_status1.SetPtEtaPhiM(MuPosGenStatus1_pt,MuPosGenStatus1_eta,MuPosGenStatus1_phi,MuPosGenStatus1_mass);
       muNegGen_status1.SetPtEtaPhiM(MuNegGenStatus1_pt,MuNegGenStatus1_eta,MuNegGenStatus1_phi,MuNegGenStatus1_mass);
       ZGen_status1 = muPosGen_status1 + muNegGen_status1;

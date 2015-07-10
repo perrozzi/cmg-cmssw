@@ -207,9 +207,9 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
         tr = self.tree
 
         # if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
-          # var( tr, 'run', int)
-          # var( tr, 'lumi', int)
-          # var( tr, 'evt', int)
+        var( tr, 'run', int)
+        var( tr, 'lumi', int)
+        var( tr, 'evt', int)
 
         var( tr, 'nvtx', int)
         if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
@@ -274,9 +274,9 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
 
     def fillCoreVariables(self, tr, iEvent, event, isMC):
 
-        # fill( tr, 'run', event.run)
-        # fill( tr, 'lumi',event.lumi)
-        # fill( tr, 'evt', event.eventId)
+        fill( tr, 'run', event.run)
+        fill( tr, 'lumi',event.lumi)
+        fill( tr, 'evt', event.eventId)
 
         fill( tr, 'nvtx', len(event.goodVertices))
         if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):

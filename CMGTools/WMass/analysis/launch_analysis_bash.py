@@ -17,7 +17,7 @@ useLHAPDF = False
 # foldername = "test_Recoil13Apr";
 # foldername = "test_Recoil13Aprnobkg";
 # foldername = "test_preapproval_norecoil";
-foldername = "test_metfix3_nosmooth";
+foldername = "testdummy";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";

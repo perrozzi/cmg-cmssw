@@ -2,11 +2,12 @@ void copytreeZ() {
 
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
-  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
   
   TString fZana_str[7] = {
     "root://eoscms//"+root_folder+"WJetsLL/ZTreeProducer_tree.root",
-    "root://eoscms//"+root_folder+"DYJetsMM/ZTreeProducer_tree.root",
+    "root://eoscms//"+root_folder+"DYLL/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"TTJets/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/ZZ/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/WW/ZTreeProducer_tree.root",
@@ -15,7 +16,7 @@ void copytreeZ() {
   };  
   TString fZana_RecoSkimmed_str[7] = {
     root_folder+"WJetsLL/ZTreeProducer_tree_RecoSkimmed.root",
-    root_folder+"DYJetsMM/ZTreeProducer_tree_RecoSkimmed.root",
+    root_folder+"DYLL/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"TTJets/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/ZZ/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/WW/ZTreeProducer_tree_RecoSkimmed.root",
@@ -35,7 +36,7 @@ void copytreeZ() {
     if(
       // !fZana_RecoSkimmed_str[sample].Contains("WJetsLL")
        // && 
-       !fZana_RecoSkimmed_str[sample].Contains("DYJetsMM")
+       !fZana_RecoSkimmed_str[sample].Contains("DYLL")
        // && 
        // !fZana_RecoSkimmed_str[sample].Contains("DATA")
        ) continue;
@@ -87,30 +88,30 @@ void copytreeZ() {
     TBranch *b_Z_pt,*b_Mu_pt,*b_u1,*b_u2;
     Double_t Z_pt,Mu_pt,pt_vis,phi_vis,u1,u2,u1corr,u2corr;
 
-    // if(sample==1 || sample==6){
-      newtreeSig->SetBranchAddress("Z_pt", &Z_pt, &b_Z_pt);
-      newtreeSig->SetBranchAddress("Z_phi", &Mu_pt, &b_Mu_pt);
-      TBranch* aBra1 = newtreeSig->Branch("pt_vis", &pt_vis, "pt_vis/D");
-      TBranch* aBra2 = newtreeSig->Branch("phi_vis", &phi_vis, "phi_vis/D");
+    // // if(sample==1 || sample==6){
+      // newtreeSig->SetBranchAddress("Z_pt", &Z_pt, &b_Z_pt);
+      // newtreeSig->SetBranchAddress("Z_phi", &Mu_pt, &b_Mu_pt);
+      // TBranch* aBra1 = newtreeSig->Branch("pt_vis", &pt_vis, "pt_vis/D");
+      // TBranch* aBra2 = newtreeSig->Branch("phi_vis", &phi_vis, "phi_vis/D");
 
-      newtreeSig->SetBranchAddress("u1", &u1, &b_u1);
-      newtreeSig->SetBranchAddress("u2", &u2, &b_u2);
-      TBranch* aBra3 = newtreeSig->Branch("u1corr", &u1corr, "u1corr/D");
-      TBranch* aBra4 = newtreeSig->Branch("u2corr", &u2corr, "u2corr/D");
+      // newtreeSig->SetBranchAddress("u1", &u1, &b_u1);
+      // newtreeSig->SetBranchAddress("u2", &u2, &b_u2);
+      // TBranch* aBra3 = newtreeSig->Branch("u1corr", &u1corr, "u1corr/D");
+      // TBranch* aBra4 = newtreeSig->Branch("u2corr", &u2corr, "u2corr/D");
 
-      for(int i=0; i<newtreeSig->GetEntries(); i++){
-        newtreeSig->GetEntry(i);
-        // Other calculations here...
-        pt_vis=Z_pt;
-        phi_vis=Z_phi;
-        aBra1->Fill();
-        aBra2->Fill();
-        u1corr=-u1;
-        u2corr=-u2;
-        aBra3->Fill();
-        aBra4->Fill();
-      } // i
-    // }
+      // for(int i=0; i<newtreeSig->GetEntries(); i++){
+        // newtreeSig->GetEntry(i);
+        // // Other calculations here...
+        // pt_vis=Z_pt;
+        // phi_vis=Z_phi;
+        // aBra1->Fill();
+        // aBra2->Fill();
+        // u1corr=-u1;
+        // u2corr=-u2;
+        // aBra3->Fill();
+        // aBra4->Fill();
+      // } // i
+    // // }
 
     cout << "file " << Form("%s",filenameoutSig.Data()) << " created" << endl;
 
@@ -134,30 +135,30 @@ void copytreeZ() {
       TBranch *b_Z_pt,*b_Mu_pt,*b_u1,*b_u2;
       Double_t Z_pt,Mu_pt,pt_vis,phi_vis,u1,u2,u1corr,u2corr;
 
-      // if(sample==1 || sample==6){
-        newtreeFake->SetBranchAddress("Z_pt", &Z_pt, &b_Z_pt);
-        newtreeFake->SetBranchAddress("Z_phi", &Mu_pt, &b_Mu_pt);
-        TBranch* aBra1 = newtreeFake->Branch("pt_vis", &pt_vis, "pt_vis/D");
-        TBranch* aBra2 = newtreeFake->Branch("phi_vis", &phi_vis, "phi_vis/D");
+      // // if(sample==1 || sample==6){
+        // newtreeFake->SetBranchAddress("Z_pt", &Z_pt, &b_Z_pt);
+        // newtreeFake->SetBranchAddress("Z_phi", &Mu_pt, &b_Mu_pt);
+        // TBranch* aBra1 = newtreeFake->Branch("pt_vis", &pt_vis, "pt_vis/D");
+        // TBranch* aBra2 = newtreeFake->Branch("phi_vis", &phi_vis, "phi_vis/D");
 
-        newtreeFake->SetBranchAddress("u1", &u1, &b_u1);
-        newtreeFake->SetBranchAddress("u2", &u2, &b_u2);
-        TBranch* aBra3 = newtreeFake->Branch("u1corr", &u1corr, "u1corr/D");
-        TBranch* aBra4 = newtreeFake->Branch("u2corr", &u2corr, "u2corr/D");
+        // newtreeFake->SetBranchAddress("u1", &u1, &b_u1);
+        // newtreeFake->SetBranchAddress("u2", &u2, &b_u2);
+        // TBranch* aBra3 = newtreeFake->Branch("u1corr", &u1corr, "u1corr/D");
+        // TBranch* aBra4 = newtreeFake->Branch("u2corr", &u2corr, "u2corr/D");
 
-        for(int i=0; i<newtreeFake->GetEntries(); i++){
-          newtreeFake->GetEntry(i);
-          // Other calculations here...
-          pt_vis=Z_pt;
-          phi_vis=Z_phi;
-          aBra1->Fill();
-          aBra2->Fill();
-          u1corr=-u1;
-          u2corr=-u2;
-          aBra3->Fill();
-          aBra4->Fill();
-        } // i
-      // }
+        // for(int i=0; i<newtreeFake->GetEntries(); i++){
+          // newtreeFake->GetEntry(i);
+          // // Other calculations here...
+          // pt_vis=Z_pt;
+          // phi_vis=Z_phi;
+          // aBra1->Fill();
+          // aBra2->Fill();
+          // u1corr=-u1;
+          // u2corr=-u2;
+          // aBra3->Fill();
+          // aBra4->Fill();
+        // } // i
+      // // }
 
       // newtreeFake->Print();
       newtreeFake->AutoSave();

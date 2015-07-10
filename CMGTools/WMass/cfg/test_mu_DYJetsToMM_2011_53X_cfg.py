@@ -96,9 +96,9 @@ selectedComponents = [DYJets,DYJets2,DYJets3,DYJets4]
 
 # TEST
 # selectedComponents = [DYJets,DYJets2,DYJets3]
-# selectedComponents = [DYJets]
-# DYJets.files = DYJets.files[:10]
-# DYJets.splitFactor = 1
+selectedComponents = [DYJets]
+DYJets.files = DYJets.files[:10]
+DYJets.splitFactor = 1
 # DYJets2.files = DYJets2.files[:1]
 # DYJets2.splitFactor = 1
 # DYJets3.files = DYJets3.files[:1]

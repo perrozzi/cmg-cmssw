@@ -65,6 +65,7 @@ def eosToLFN( path ):
     Just strip out /eos/cms from path.
     If this string is not found, return path.
     ??? Shouldn't we raise an exception instead?"""
+    path = path.replace('root://eoscms.cern.ch/','')
     return path.replace('/eos/cms','')
 
 #also define an alias for backwards compatibility
