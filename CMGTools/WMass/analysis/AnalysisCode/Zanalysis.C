@@ -622,99 +622,99 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
           for(int m=m_start; m<m_end; m++){
 
-          TString RecoilVar_str = "";
-          if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
-          if(n==0){
-            // cout << RecoilVar_str << endl;
+            TString RecoilVar_str = "";
+            if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
+            if(n==0){
+              // cout << RecoilVar_str << endl;
 
-            //------------------------------------------------------------------------------------------------
-            // Apply recoil corrections
-            //------------------------------------------------------------------------------------------------
+              //------------------------------------------------------------------------------------------------
+              // Apply recoil corrections
+              //------------------------------------------------------------------------------------------------
 
-            int rapBin=0;
-            if(fabs(ZGen_rap)>=1 ) rapBin=1;
-            // if(fabs(ZGen_rap)<1) rapBin=1;
-            // if(fabs(ZGen_rap)>=1 && fabs(ZGen_rap)<=1.25) rapBin=125;
-            // if(fabs(ZGen_rap)>=1.25 && fabs(ZGen_rap)<=1.5) rapBin=150;
-            // if(fabs(ZGen_rap)>=1.5 && fabs(ZGen_rap)<=1.75) rapBin=175;
-            // if(fabs(ZGen_rap)>=1.75 && fabs(ZGen_rap)<=2.0) rapBin=200;
-            // if(fabs(ZGen_rap)>2.0) rapBin=201;
-            
-            if(use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
+              int rapBin=0;
+              if(fabs(ZGen_rap)>=1 ) rapBin=1;
+              // if(fabs(ZGen_rap)<1) rapBin=1;
+              // if(fabs(ZGen_rap)>=1 && fabs(ZGen_rap)<=1.25) rapBin=125;
+              // if(fabs(ZGen_rap)>=1.25 && fabs(ZGen_rap)<=1.5) rapBin=150;
+              // if(fabs(ZGen_rap)>=1.5 && fabs(ZGen_rap)<=1.75) rapBin=175;
+              // if(fabs(ZGen_rap)>=1.75 && fabs(ZGen_rap)<=2.0) rapBin=200;
+              // if(fabs(ZGen_rap)>2.0) rapBin=201;
               
-              if(use_PForNoPUorTKmet==0){
-                met_trasv = pfmet;
-                metphi_trasv = pfmet_phi;
-              }else if(use_PForNoPUorTKmet==1){
-                met_trasv = nopumet;
-                metphi_trasv = nopumet_phi;
-              }else if(use_PForNoPUorTKmet==2){
-                met_trasv = tkmet;
-                metphi_trasv = tkmet_phi;
-              }
-              
-              // cout << "m= " << m  << " u1u2 " << WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m] << " par " << WMass::RecoilCorrVarDiagoParN_[m]  << endl;
-              // cout << " met_trasv before=" << met_trasv << " metphi_trasv before=" << metphi_trasv << " met_trasvCentral before=" << met_trasvCentral << " metphi_trasvCentral before=" << metphi_trasvCentral << endl;
-              // cout << "met_trasvCentral before=" << met_trasvCentral << endl;
-              // cout << "met_trasv before=" << met_trasv << endl;
-
-              if(useRecoilCorr==2 || useRecoilCorr==3){
-                // cout << "ZGen_pt=" << ZGen_pt << " ZGen_phi=" << ZGen_phi << " ZNocorr.Pt()=" << ZNocorr.Pt() << " ZNocorr.Phi()=" << ZNocorr.Phi() << endl;
-                // cout << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " m=" << m << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas << " rapBin=" << rapBin << Form(" hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) << endl;
-                // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
-                correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
-                                         WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
-                                         RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1);
-                if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1)){
-                  // cout << "correcting met_trasv to eigen par " << (RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC) << ", m= " << m << endl;
-                  correctorRecoil_Z->CorrectMET3gaus(
-                          met_trasv,metphi_trasv,
-                          ZGen_pt,ZGen_phi,
-                          ZNocorr.Pt(),ZNocorr.Phi(),
-                          u1_recoil, u2_recoil,
-                          RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                          rapBin,recoilCorrSigmas);
-                }else{
-                  // cout << "correcting met_trasv to default eigen par 0, m= " << m << endl;
-                  correctorRecoil_Z->CorrectMET3gaus(
-                          met_trasv,metphi_trasv,
-                          ZGen_pt,ZGen_phi,
-                          ZNocorr.Pt(),ZNocorr.Phi(),
-                          u1_recoil, u2_recoil,
-                          0, 0, 0,
-                          rapBin,recoilCorrSigmas);
+              if(use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
+                
+                if(use_PForNoPUorTKmet==0){
+                  met_trasv = pfmet;
+                  metphi_trasv = pfmet_phi;
+                }else if(use_PForNoPUorTKmet==1){
+                  met_trasv = nopumet;
+                  metphi_trasv = nopumet_phi;
+                }else if(use_PForNoPUorTKmet==2){
+                  met_trasv = tkmet;
+                  metphi_trasv = tkmet_phi;
                 }
-                if(m==m_start){
-                  // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
-                  if(
-                      (RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0)
-                      && ((RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1))
-                    ){
-                    // cout << " setting met_trasvCentral to central" << endl;
-                    correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
-                                             WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
-                                             RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1);
-                    // cout << "correcting met_trasvCentral to eigen par " << (RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC) << ", m= " << m << endl;
+                
+                // cout << "m= " << m  << " u1u2 " << WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m] << " par " << WMass::RecoilCorrVarDiagoParN_[m]  << endl;
+                // cout << " met_trasv before=" << met_trasv << " metphi_trasv before=" << metphi_trasv << " met_trasvCentral before=" << met_trasvCentral << " metphi_trasvCentral before=" << metphi_trasvCentral << endl;
+                // cout << "met_trasvCentral before=" << met_trasvCentral << endl;
+                // cout << "met_trasv before=" << met_trasv << endl;
+
+                if(useRecoilCorr==2 || useRecoilCorr==3){
+                  // cout << "ZGen_pt=" << ZGen_pt << " ZGen_phi=" << ZGen_phi << " ZNocorr.Pt()=" << ZNocorr.Pt() << " ZNocorr.Phi()=" << ZNocorr.Phi() << endl;
+                  // cout << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " m=" << m << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas << " rapBin=" << rapBin << Form(" hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) << endl;
+                  // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
+                  correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
+                                           WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
+                                           RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1);
+                  if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1)){
+                    // cout << "correcting met_trasv to eigen par " << (RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC) << ", m= " << m << endl;
                     correctorRecoil_Z->CorrectMET3gaus(
-                            met_trasvCentral,metphi_trasvCentral,
+                            met_trasv,metphi_trasv,
+                            ZGen_pt,ZGen_phi,
+                            ZNocorr.Pt(),ZNocorr.Phi(),
+                            u1_recoil, u2_recoil,
+                            RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
+                            rapBin,recoilCorrSigmas);
+                  }else{
+                    // cout << "correcting met_trasv to default eigen par 0, m= " << m << endl;
+                    correctorRecoil_Z->CorrectMET3gaus(
+                            met_trasv,metphi_trasv,
                             ZGen_pt,ZGen_phi,
                             ZNocorr.Pt(),ZNocorr.Phi(),
                             u1_recoil, u2_recoil,
                             0, 0, 0,
                             rapBin,recoilCorrSigmas);
-                  }else{
-                    // cout << "correcting met_trasvCentral to default met_trasv, m= " << m << endl;
-                    // cout << " met_trasvCentral = met_trasv" << endl;
-                    met_trasvCentral    = met_trasv;
-                    metphi_trasvCentral = metphi_trasv;
+                  }
+                  if(m==m_start){
+                    // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
+                    if(
+                        (RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0)
+                        && ((RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1))
+                      ){
+                      // cout << " setting met_trasvCentral to central" << endl;
+                      correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
+                                               WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
+                                               RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1);
+                      // cout << "correcting met_trasvCentral to eigen par " << (RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC) << ", m= " << m << endl;
+                      correctorRecoil_Z->CorrectMET3gaus(
+                              met_trasvCentral,metphi_trasvCentral,
+                              ZGen_pt,ZGen_phi,
+                              ZNocorr.Pt(),ZNocorr.Phi(),
+                              u1_recoil, u2_recoil,
+                              0, 0, 0,
+                              rapBin,recoilCorrSigmas);
+                    }else{
+                      // cout << "correcting met_trasvCentral to default met_trasv, m= " << m << endl;
+                      // cout << " met_trasvCentral = met_trasv" << endl;
+                      met_trasvCentral    = met_trasv;
+                      metphi_trasvCentral = metphi_trasv;
+                    }
                   }
                 }
+                // cout << "met_trasv after=" << met_trasv << " metphi_trasv after=" << metphi_trasv << " met_trasvCentral after=" << met_trasvCentral << " metphi_trasvCentral after=" << metphi_trasvCentral << endl;
               }
-              // cout << "met_trasv after=" << met_trasv << " metphi_trasv after=" << metphi_trasv << " met_trasvCentral after=" << met_trasvCentral << " metphi_trasvCentral after=" << metphi_trasvCentral << endl;
+              // cout << "met_trasvCentral after=" << met_trasvCentral << endl;
+              // cout << "met_trasv after=" << met_trasv << endl;
             }
-            // cout << "met_trasvCentral after=" << met_trasvCentral << endl;
-            // cout << "met_trasv after=" << met_trasv << endl;
-          }  
             
             Zcorr = muPosCorr + muNegCorr;
             ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
