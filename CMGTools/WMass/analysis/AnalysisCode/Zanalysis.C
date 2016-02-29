@@ -561,7 +561,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         if(!(TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
           && muTrg
           && muRelIso<0.12 && neutrinoRelIso<0.5
-          && muNoCorr.Pt()>0)
+          && muNoCorr.Pt()>0))
           continue;
 
         for(int n=0; n<WMass::KalmanNvariations; n++){
