@@ -549,17 +549,20 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       //------------------------------------------------------
       // start reco event selection
       //------------------------------------------------------
-      if( evtHasGoodVtx && evtHasTrg && muNoCorr.Pt()>0
-          // CUTS ADDED TO SPEED UP THE CODE
-          && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
+      if( evtHasGoodVtx && evtHasTrg 
+          // SYMMETRIC CUTS ADDED HERE TO SPEED UP THE CODE
           // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4
           && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
           && MuPos_charge != MuNeg_charge
-          && muTrg
           && MuPosIsTight && MuPos_dxy<0.02
           && MuNegIsTight && MuNeg_dxy<0.02
-          && muRelIso<0.12 && neutrinoRelIso<0.5
         ){ // good reco event
+        
+        if(!(TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
+          && muTrg
+          && muRelIso<0.12 && neutrinoRelIso<0.5
+          && muNoCorr.Pt()>0)
+          continue;
 
         for(int n=0; n<WMass::KalmanNvariations; n++){
 
