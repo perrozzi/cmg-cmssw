@@ -807,130 +807,130 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             //------------------------------------------------------
             double WlikePos_var_NotScaledCentral[] = {WlikePos_muCorrCentral.Pt(),WlikePosCentral.Mt(),WlikePos_metCentral.Pt(),WlikePos_MTFirstOrder_central}; // Zcorr would be TEMP !!!!
             
-            //-----------------------------
-            // Throw toys for efficiency (i)
-            //------------------------------
-            TString effToy_str = "";
-            for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
-              
-              if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
-              
-              if( (m==m_start && n==0) 
-                  && ((useEffSF>=2 && useEffSF<=6) || (useEffSF>=13 && useEffSF<=16)) 
-                  && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-                
-                TRG_TIGHT_ISO_muons_SF = 1;
-                eff_TIGHT_SF = 1;
-                eff_TIGHT_subleading_SF = 1;
-                eff_ISO_SF = 1;
-                eff_TRG_SF = 1;
-                
-                if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
-                  // === leading
-                  eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
-                  if(useEffSF==13){
-                    random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
-                    // cout << "SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)= " << SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)) << endl;
-                  }
-                  TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
-                }
-                if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
-                  // === subleading
-                  eff_ISO_SF   = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
-                  if(useEffSF==14){
-                    random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                    eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
-                    // cout << "SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))= " << SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt())) << endl;
-                  }
-                  TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
-                }
-                if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
-                  // === subleading
-                  eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
-                  if(useEffSF==15){
-                    random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
-                    // cout << "SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))= " << SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt)) << endl;
-                  }
-                  TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
-                }
-                if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
-                  // === leading
-                  eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
-                  if(useEffSF==16){
-                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
-                    // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt)) << endl;
-                  }
-                  TRG_TIGHT_ISO_muons_SF *= eff_TRG_SF;
-                }
-              }else if(useEffSF==7){
-                TRG_TIGHT_ISO_muons_SF=0.98;
-              }
-
-              // cout 
-              // << "TRG_TIGHT_ISO_muons_SF= " << TRG_TIGHT_ISO_muons_SF
-              // << " eff_TIGHT_SF= " << eff_TIGHT_SF
-              // << " eff_TIGHT_subleading_SF= " << eff_TIGHT_subleading_SF
-              // << " eff_ISO_SF= " << eff_ISO_SF
-              // << " eff_TRG_SF= " << eff_TRG_SF
-              // << endl;
-                            
+            //------------------------------------------------------
+            // good pair within acceptance cuts for both muons
+            //------------------------------------------------------
+            if( 
+                   TMath::Abs(WlikePos_muCorrCentral.Eta())<WMass::etaMaxMuons
+                && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
+                && MuPos_charge != MuNeg_charge
+                && WlikePos_muTrg
+                && WlikePos_muCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio 
+                && WlikePos_neutrinoCorrCentral.Pt()>10 
+                // && noTrgExtraMuonsLeadingPt<10 // REMOVED BECAUSE OF MARKUS
+              ){
               //------------------------------------------------------
-              // good pair within acceptance cuts for both muons
+              // full ID and tight requirements on the muons as defined by Heiner for the efficiencies
               //------------------------------------------------------
-              if( 
-                     TMath::Abs(WlikePos_muCorrCentral.Eta())<WMass::etaMaxMuons
-                  && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
-                  && MuPos_charge != MuNeg_charge
-                  && WlikePos_muTrg
-                  && WlikePos_muCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio 
-                  && WlikePos_neutrinoCorrCentral.Pt()>10 
-                  // && noTrgExtraMuonsLeadingPt<10 // REMOVED BECAUSE OF MARKUS
+              if(    MuPosIsTight && MuPos_dxy<0.02
+                  && MuNegIsTight && MuNeg_dxy<0.02
+                  && WlikePos_muRelIso<0.12 && WlikePos_neutrinoRelIso<0.5
                 ){
+                for(int k=0;k<WMass::NFitVar;k++)
+                  if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_5_RecoCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                   WlikePos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+      
                 //------------------------------------------------------
-                // full ID and tight requirements on the muons as defined by Heiner for the efficiencies
+                // cut on MET
                 //------------------------------------------------------
-                if(    MuPosIsTight && MuPos_dxy<0.02
-                    && MuNegIsTight && MuNeg_dxy<0.02
-                    && WlikePos_muRelIso<0.12 && WlikePos_neutrinoRelIso<0.5
-                  ){
+                if(WlikePos_metCentral.Pt()>WMass::sel_xmin[2]*ZWmassRatio){
                   for(int k=0;k<WMass::NFitVar;k++)
-                    if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_5_RecoCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                    if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_6_METCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                      WlikePos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-        
-                  //------------------------------------------------------
-                  // cut on MET
-                  //------------------------------------------------------
-                  if(WlikePos_metCentral.Pt()>WMass::sel_xmin[2]*ZWmassRatio){
-                    for(int k=0;k<WMass::NFitVar;k++)
-                      if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_6_METCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                       WlikePos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-                    
-                    if(controlplots && m==m_start && n==0) common_stuff::plot1D(Form("hZ_pt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                    Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 1000,0,250 );
+                  
+                  if(controlplots && m==m_start && n==0) common_stuff::plot1D(Form("hZ_pt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                  Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 1000,0,250 );
 
+                  //------------------------------------------------------
+                  // cut on W recoil (BY DEFAULT IS 15)
+                  //------------------------------------------------------
+                  if(WlikePosCentral.Pt()<WMass::WpTcut*ZWmassRatio
+                      && ZcorrCentral.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
+                     ){
+                    for(int k=0;k<WMass::NFitVar;k++)
+                      if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_7_RecoilCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                        WlikePos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                    
                     //------------------------------------------------------
-                    // cut on W recoil (BY DEFAULT IS 15)
+                    // Apply the "box" cuts on pT, mT, MET -- based on central correction
                     //------------------------------------------------------
-                    if(WlikePosCentral.Pt()<WMass::WpTcut*ZWmassRatio
-                        && ZcorrCentral.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
-                       ){
-                      for(int k=0;k<WMass::NFitVar;k++)
-                        if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_7_RecoilCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                          WlikePos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-                      
-                      //------------------------------------------------------
-                      // Apply the "box" cuts on pT, mT, MET -- based on central correction
-                      //------------------------------------------------------
-                      if(
-                          WlikePos_var_NotScaledCentral[0] > WMass::sel_xmin[0]*ZWmassRatio && WlikePos_var_NotScaledCentral[0] < WMass::sel_xmax[0]*ZWmassRatio  // Pt
-                          && WlikePos_var_NotScaledCentral[1] > WMass::sel_xmin[1]*ZWmassRatio && WlikePos_var_NotScaledCentral[1] < WMass::sel_xmax[1]*ZWmassRatio // Mt
-                          && WlikePos_var_NotScaledCentral[2] > WMass::sel_xmin[2]*ZWmassRatio && WlikePos_var_NotScaledCentral[2] < WMass::sel_xmax[2]*ZWmassRatio // MET
-                          // && WlikePos_var_NotScaledCentral[3] > WMass::sel_xmin[3]*ZWmassRatio && WlikePos_var_NotScaledCentral[3] < WMass::sel_xmax[3]*ZWmassRatio // MtLin
-                        ){
-                      
+                    if(
+                        WlikePos_var_NotScaledCentral[0] > WMass::sel_xmin[0]*ZWmassRatio && WlikePos_var_NotScaledCentral[0] < WMass::sel_xmax[0]*ZWmassRatio  // Pt
+                        && WlikePos_var_NotScaledCentral[1] > WMass::sel_xmin[1]*ZWmassRatio && WlikePos_var_NotScaledCentral[1] < WMass::sel_xmax[1]*ZWmassRatio // Mt
+                        && WlikePos_var_NotScaledCentral[2] > WMass::sel_xmin[2]*ZWmassRatio && WlikePos_var_NotScaledCentral[2] < WMass::sel_xmax[2]*ZWmassRatio // MET
+                        // && WlikePos_var_NotScaledCentral[3] > WMass::sel_xmin[3]*ZWmassRatio && WlikePos_var_NotScaledCentral[3] < WMass::sel_xmax[3]*ZWmassRatio // MtLin
+                      ){
+                    
+                      //-----------------------------
+                      // Throw toys for efficiency (i)
+                      //------------------------------
+                      TString effToy_str = "";
+                      for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
+                        
+                        if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
+                        
+                        if( (m==m_start && n==0) 
+                            && ((useEffSF>=2 && useEffSF<=6) || (useEffSF>=13 && useEffSF<=16)) 
+                            && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+                          
+                          TRG_TIGHT_ISO_muons_SF = 1;
+                          eff_TIGHT_SF = 1;
+                          eff_TIGHT_subleading_SF = 1;
+                          eff_ISO_SF = 1;
+                          eff_TRG_SF = 1;
+                          
+                          if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
+                            // === leading
+                            eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
+                            if(useEffSF==13){
+                              random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+                              eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
+                              // cout << "SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)= " << SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)) << endl;
+                            }
+                            TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
+                          }
+                          if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
+                            // === subleading
+                            eff_ISO_SF   = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
+                            if(useEffSF==14){
+                              random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+                              eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
+                              // cout << "SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))= " << SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt())) << endl;
+                            }
+                            TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
+                          }
+                          if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
+                            // === subleading
+                            eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
+                            if(useEffSF==15){
+                              random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+                              eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
+                              // cout << "SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))= " << SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt)) << endl;
+                            }
+                            TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
+                          }
+                          if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
+                            // === leading
+                            eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
+                            if(useEffSF==16){
+                              random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+                              eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
+                              // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt)) << endl;
+                            }
+                            TRG_TIGHT_ISO_muons_SF *= eff_TRG_SF;
+                          }
+                        }else if(useEffSF==7){
+                          TRG_TIGHT_ISO_muons_SF=0.98;
+                        }
+
+                        // cout 
+                        // << "TRG_TIGHT_ISO_muons_SF= " << TRG_TIGHT_ISO_muons_SF
+                        // << " eff_TIGHT_SF= " << eff_TIGHT_SF
+                        // << " eff_TIGHT_subleading_SF= " << eff_TIGHT_subleading_SF
+                        // << " eff_ISO_SF= " << eff_ISO_SF
+                        // << " eff_TRG_SF= " << eff_TRG_SF
+                        // << endl;
+                            
                         //------------------------------------------------------
                         // Compute/retrieve PDF weights with LHAPDF or LHE
                         //------------------------------------------------------
@@ -1252,12 +1252,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         //------------------------------------------------------------------------------------------------ 
                         if(controlplots && m==m_start && n==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::ZMassCentral_MeV, eta_str, WMass::nSigOrQCD_str[0],Form("WlikePos%s_8_JetCut",WCharge_str.Data()));
 
-                      }
-                    }
-                  }
-                } // end full ID and tight requirements
-              } // end if for good pair within acceptance cuts for both muons
-            } // end efficiency toys
+                      } // end efficiency toys
+                    } // end of "box" cuts 
+                  } // end cut on W-like recoil
+                } // end cut on met
+              } // end full ID and tight requirements
+            } // end if for good pair within acceptance cuts for both muons
           } // end RecoilCorr params loop
         } // end KalmanVars loop
       } // end if for good reco event
