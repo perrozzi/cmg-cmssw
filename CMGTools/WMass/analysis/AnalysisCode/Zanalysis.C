@@ -387,6 +387,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       return;
     }
     
+    // WLIKE CHARGE SYMMETRIC VARIABLES
     met_trasvCentral = met_trasv;
     metphi_trasvCentral = metphi_trasv;
 
@@ -572,9 +573,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         ){ // good reco event
         
         if(!(TMath::Abs(WlikePos_muCorrCentral.Eta())<WMass::etaMaxMuons
-          && WlikePos_muTrg
-          && WlikePos_muRelIso<0.12 && WlikePos_neutrinoRelIso<0.5
-          && WlikePos_muNoCorr.Pt()>0))
+            && WlikePos_muTrg
+            && WlikePos_muRelIso<0.12 && WlikePos_neutrinoRelIso<0.5
+            && WlikePos_muNoCorr.Pt()>0)
+          &&
+          !(TMath::Abs(WlikeNeg_muCorrCentral.Eta())<WMass::etaMaxMuons
+            && WlikeNeg_muTrg
+            && WlikeNeg_muRelIso<0.12 && WlikeNeg_neutrinoRelIso<0.5
+            && WlikeNeg_muNoCorr.Pt()>0))
           continue;
 
         for(int n=0; n<WMass::KalmanNvariations; n++){
