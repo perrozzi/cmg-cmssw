@@ -750,25 +750,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
             
             if(!(ZcorrCentral.M()>50)) continue;
-            
-            //------------------------------------------------------------------------------------------------
-            // Apply PT and Pol weight based on RECO
-            //------------------------------------------------------------------------------------------------
-            
-            if(m==m_start && n==0) {
-              if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
-                evt_weight *= hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
-
-              // Boson Polarization
-              common_stuff::ComputeAllVarPietro(muPosCorr,muNegCorr, costh_CS, phi_CS, costh_HX, phi_HX);
-
-              // cout << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity() << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt() << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity()) << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt()) << " costh_CS= " << costh_CS << " phi_CS= " << phi_CS << endl;
-
-              if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))){
-                double interpolated_weight = hZPolSF->Interpolate(costh_CS, TMath::Abs(Zcorr.Rapidity()));
-                evt_weight *= interpolated_weight>0 ? interpolated_weight : 1;
-              }
-            }
 
             //------------------------------------------------------
             // Define mu+, mu-, Z
@@ -819,6 +800,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 && WlikePos_neutrinoCorrCentral.Pt()>10 
                 // && noTrgExtraMuonsLeadingPt<10 // REMOVED BECAUSE OF MARKUS
               ){
+                
               //------------------------------------------------------
               // full ID and tight requirements on the muons as defined by Heiner for the efficiencies
               //------------------------------------------------------
@@ -826,6 +808,26 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   && MuNegIsTight && MuNeg_dxy<0.02
                   && WlikePos_muRelIso<0.12 && WlikePos_neutrinoRelIso<0.5
                 ){
+
+                //------------------------------------------------------------------------------------------------
+                // Apply Z PT and Z Polarization weight based on RECO
+                //------------------------------------------------------------------------------------------------
+                
+                if(m==m_start && n==0) {
+                  if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+                    evt_weight *= hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
+
+                  // Boson Polarization
+                  common_stuff::ComputeAllVarPietro(muPosCorr,muNegCorr, costh_CS, phi_CS, costh_HX, phi_HX);
+
+                  // cout << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity() << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt() << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity()) << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt()) << " costh_CS= " << costh_CS << " phi_CS= " << phi_CS << endl;
+
+                  if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))){
+                    double interpolated_weight = hZPolSF->Interpolate(costh_CS, TMath::Abs(Zcorr.Rapidity()));
+                    evt_weight *= interpolated_weight>0 ? interpolated_weight : 1;
+                  }
+                }
+                
                 for(int k=0;k<WMass::NFitVar;k++)
                   if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_5_RecoCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                    WlikePos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
