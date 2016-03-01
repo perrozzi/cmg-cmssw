@@ -775,8 +775,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             
             Z_met.SetPtEtaPhiM(met_trasv,0,metphi_trasv,0);
             Z_metCentral.SetPtEtaPhiM(met_trasvCentral,0,metphi_trasvCentral,0);
-            neutrino_trasv.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
-            neutrino_trasvCentral.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
+            neutrino_trasv.SetPtEtaPhiM(WlikePos_neutrinoNoCorr.Pt(),0,WlikePos_neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
+            neutrino_trasvCentral.SetPtEtaPhiM(WlikePos_neutrinoNoCorr.Pt(),0,WlikePos_neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
             mu_trasv.SetPtEtaPhiM(WlikePos_muCorr.Pt(),0,WlikePos_muCorr.Phi(),0);
             mu_trasvCentral.SetPtEtaPhiM(WlikePos_muCorrCentral.Pt(),0,WlikePos_muCorrCentral.Phi(),0);
             mu_trasvNoCorr.SetPtEtaPhiM(WlikePos_muNoCorr.Pt(),0,WlikePos_muNoCorr.Phi(),0);
