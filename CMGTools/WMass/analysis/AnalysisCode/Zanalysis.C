@@ -385,7 +385,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       break;
     }
     // cout << "jentry= " << jentry << " isChargePos= " << isChargePos << endl; continue;
-    TString WCharge_str = isChargePos?"Pos":"Neg";
     
     
     // The following variables will get the recoil components from the corrector
