@@ -748,7 +748,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             
             Zcorr = muPosCorr + muNegCorr;
             ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
-
+            
+            if(!(ZcorrCentral.M()>50)) continue;
+            
             //------------------------------------------------------------------------------------------------
             // Apply PT and Pol weight based on RECO
             //------------------------------------------------------------------------------------------------
@@ -878,7 +880,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               //------------------------------------------------------
               // good pair within acceptance cuts for both muons
               //------------------------------------------------------
-              if( ZcorrCentral.M()>50
+              if( 
                   && TMath::Abs(WlikePos_muCorrCentral.Eta())<WMass::etaMaxMuons
                   && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
                   && MuPos_charge != MuNeg_charge
