@@ -66,7 +66,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   cout << "generated_PDF_set= "<<generated_PDF_set
        << " generated_PDF_member= " << generated_PDF_member
        << " contains_PDF_reweight= " << contains_PDF_reweight
-       << " WMass::WlikeCharge= " << WMass::WlikeCharge
+       << " WMass::RemoveWlikePosNegOverlap= " << WMass::RemoveWlikePosNegOverlap
        << endl;
 
   TString chunk_str = chunk>0? Form("_chunk%d",chunk) : "";
@@ -359,7 +359,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //------------------------------------------------------------
     if(jentry%2==0 && sampleName.Contains("DATA")) continue;
 
-    // W-like logic:
+    // W-like logic to be used in case of Wlike Pos/Neg overlap removal:
     // jentry      selected in data?    selected in mc?    mod 4    Wlike
     // ------------------------------------------------------------------
     //    0                  n               y               0      pos
@@ -371,7 +371,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //    6                  n               y               2      neg
     //    7                  y               y               3      neg
     
-    // bool isChargePos = WMass::WlikeCharge==1;
+    // bool isChargePos = WMass::RemoveWlikePosNegOverlap==1;
     bool isChargePos = true;
     switch(jentry%4){
       case 0:
