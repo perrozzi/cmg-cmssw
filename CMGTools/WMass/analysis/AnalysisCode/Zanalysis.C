@@ -814,6 +814,31 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             bool good_WlikePos = true; // put here the event number mod 4 condition
             bool good_WlikeNeg = true; // put here the event number mod 4 condition
             
+            // W-like logic:
+            // jentry      selected in data?    selected in mc?    mod 4    Wlike
+            // ------------------------------------------------------------------
+            //    0                  n               y               0      pos
+            //    1                  y               y               1      pos
+            //    2                  n               y               2      neg
+            //    3                  y               y               3      neg
+            //    4                  n               y               0      pos
+            //    5                  y               y               1      pos
+            //    6                  n               y               2      neg
+            //    7                  y               y               3      neg
+            
+            switch(jentry%4){
+              case 0:
+              case 1:
+                good_WlikeNeg = false;
+              break;
+              case 2:
+              case 3:
+                good_WlikePos = false;
+              break;
+            }
+            // cout << "jentry= " << jentry << " good_WlikePos= " << good_WlikePos << " good_WlikeNeg= " << good_WlikeNeg << endl;continue;
+            
+            
             if( !( good_WlikePos
                 && TMath::Abs(WlikePos_muCorrCentral.Eta())<WMass::etaMaxMuons
                 && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
