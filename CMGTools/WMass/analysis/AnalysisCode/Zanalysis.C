@@ -162,22 +162,21 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   }else{
     cout << "NOT APPLYING EFFICIENCIES SF (not requested or analyzing data)"<< endl;
   }
+  
   //------------------------------------------------------
   // retrieve pileup SF
   //------------------------------------------------------
   TH1D*hPileupSF;
 
   if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-    // TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
-    // finPileupSF = new TFile(Form("../utils/pileup_reweighting_%s.root",vtx_str.Data())); // used only to build templates
     TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
-    // TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11_7TeV_Markus.root")); // used only to build templates
     if(!finPileupSF){
       cout << "ERROR: file ../utils/pileup/pileup_reweighting_Fall11.root is missing, impossible to retrieve pileup reweighting factors" << endl;
       return;
     }
     hPileupSF=(TH1D*)finPileupSF->Get("hpileup_reweighting_Fall11");
   }
+  
   //------------------------------------------------------
   // retrieve invariant mass SF (for EWK)
   //------------------------------------------------------
@@ -200,6 +199,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       hZmassSF_syst=(TH1D*)finZmassSF->Get("noewk_p8std_div_ewk_p8std"); hZmassSF_syst->Sumw2();
     }
   }
+  
   //------------------------------------------------------
   // Define binning for rap and pt
   //------------------------------------------------------
@@ -314,13 +314,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
-  // int use_PForNoPUorTKmet = 0; // 0:PF, 1:NOPU, 2:TK // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-
-  // TString metSuffix;
-  // if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
-  // if(use_PForNoPUorTKmet==1) metSuffix="_pfnoPU";
-  // if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
-  
   TString generatorSuffix="_powheg";
   if (sampleName.Contains("DYJetsMadSig"))
     generatorSuffix="_madgraph";
@@ -482,20 +475,21 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
     //---------------- PT weight (usePtSF = -1; # Boson pT reweighting: -1=none, 0=data, 1...=other options)
     // OBSOLETE setting
-    if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF_WlikePos && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
-      // evt_weight_original*=hZPtSF_WlikePos->GetBinContent(hZPtSF_WlikePos->GetXaxis()->FindBin(/* Z_pt>0?Z_pt: */ZGen_pt));
-      evt_weight *= hZPtSF_WlikePos->Interpolate(ZGen_pt)>0?hZPtSF_WlikePos->Interpolate(ZGen_pt):1;
-    else if(usePtSF==1 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF_WlikePos && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
-      evt_weight *= TMath::Min(1+0.1*(25-ZGen_pt)/25,0.5);
-      common_stuff::plot2D(Form("weight1_vs_genpT"),
-                                      ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
-                                          h_2d, 50,0,50,50,0,2 );
-    }
-    else if(usePtSF==2 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF_WlikePos && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
-      evt_weight *= (1+0.1*(ZGen_pt-25)/25);
-      common_stuff::plot2D(Form("weight2_vs_genpT"),
-                                      ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
-                                          h_2d, 50,0,50,50,0,2 );
+    if ((IS_MC_CLOSURE_TEST || isMCorDATA==0) && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))) {
+      if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */)
+        evt_weight *= hZPtSF_WlikePos->Interpolate(ZGen_pt)>0?hZPtSF_WlikePos->Interpolate(ZGen_pt):1;
+      else if(usePtSF==1 && ZGen_pt<ZPt_cut){
+        evt_weight *= TMath::Min(1+0.1*(25-ZGen_pt)/25,0.5);
+        common_stuff::plot2D(Form("weight1_vs_genpT"),
+                                        ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
+                                            h_2d, 50,0,50,50,0,2 );
+      }
+      else if(usePtSF==2 && ZGen_pt<ZPt_cut){
+        evt_weight *= (1+0.1*(ZGen_pt-25)/25);
+        common_stuff::plot2D(Form("weight2_vs_genpT"),
+                                        ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
+                                            h_2d, 50,0,50,50,0,2 );
+      }
     }
     
     //---------------- EWK weight
