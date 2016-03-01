@@ -78,17 +78,30 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   
   bool isChargePos = WMass::WlikeCharge==1;
   TString WCharge_str = isChargePos?"Pos":"Neg";
-  TLorentzVector& muNoCorr            = isChargePos?muPosNoCorr     :muNegNoCorr;
-  TLorentzVector& neutrinoNoCorr      = isChargePos?muNegNoCorr     :muPosNoCorr;
-  TLorentzVector& muCorr              = isChargePos?muPosCorr       :muNegCorr;
-  TLorentzVector& neutrinoCorr        = isChargePos?muNegCorr       :muPosCorr;
-  TLorentzVector& muCorrCentral       = isChargePos?muPosCorrCentral:muNegCorrCentral;
-  TLorentzVector& neutrinoCorrCentral = isChargePos?muNegCorrCentral:muPosCorrCentral;
-  TLorentzVector& muGen_status3       = isChargePos?muPosGen_status3:muNegGen_status3;
-  TLorentzVector& neutrinoGen_status3 = isChargePos?muNegGen_status3:muPosGen_status3;
-  Double_t&       muRelIso            = isChargePos?MuPosRelIso     :MuNegRelIso;
-  Double_t&       neutrinoRelIso      = isChargePos?MuNegRelIso     :MuPosRelIso;
-  Int_t&          muTrg               = isChargePos?MuPosTrg        :MuNegTrg;
+  
+  TLorentzVector& WlikePos_muNoCorr            = muPosNoCorr;
+  TLorentzVector& WlikePos_neutrinoNoCorr      = muNegNoCorr;
+  TLorentzVector& WlikePos_muCorr              = muPosCorr;
+  TLorentzVector& WlikePos_neutrinoCorr        = muNegCorr;
+  TLorentzVector& WlikePos_muCorrCentral       = muPosCorrCentral;
+  TLorentzVector& WlikePos_neutrinoCorrCentral = muNegCorrCentral;
+  TLorentzVector& WlikePos_muGen_status3       = muPosGen_status3;
+  TLorentzVector& WlikePos_neutrinoGen_status3 = muNegGen_status3;
+  Double_t&       WlikePos_muRelIso            = MuPosRelIso;
+  Double_t&       WlikePos_neutrinoRelIso      = MuNegRelIso;
+  Int_t&          WlikePos_muTrg               = MuPosTrg;
+
+  TLorentzVector& WlikeNeg_muNoCorr            = muNegNoCorr;
+  TLorentzVector& WlikeNeg_neutrinoNoCorr      = muPosNoCorr;
+  TLorentzVector& WlikeNeg_muCorr              = muNegCorr;
+  TLorentzVector& WlikeNeg_neutrinoCorr        = muPosCorr;
+  TLorentzVector& WlikeNeg_muCorrCentral       = muNegCorrCentral;
+  TLorentzVector& WlikeNeg_neutrinoCorrCentral = muPosCorrCentral;
+  TLorentzVector& WlikeNeg_muGen_status3       = muNegGen_status3;
+  TLorentzVector& WlikeNeg_neutrinoGen_status3 = muPosGen_status3;
+  Double_t&       WlikeNeg_muRelIso            = MuNegRelIso;
+  Double_t&       WlikeNeg_neutrinoRelIso      = MuPosRelIso;
+  Int_t&          WlikeNeg_muTrg               = MuNegTrg;
 
 
   //------------------------------------------------------
@@ -464,7 +477,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // gen stuff to be used only when required
     if(useGenVar){
       if(ZGen_mass>0){
-        double WlikeGen_var_NotScaled[] = {muGen_status3.Pt(),ZGen_mt,neutrinoGen_status3.Pt()};
+        double WlikeGen_var_NotScaled[] = {WlikePos_muGen_status3.Pt(),ZGen_mt,WlikePos_neutrinoGen_status3.Pt()};
         
         for(int k=0;k<WMass::NFitVar;k++)
           common_stuff::plot1D(Form("hWlike%s_%sNonScaled_1_Gen_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
@@ -480,12 +493,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             common_stuff::plot1D(Form("hWlike%s_%sNonScaled_2_ZGenMassCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                                   WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
           
-          if(TMath::Abs(muGen_status3.Eta())<WMass::etaMaxMuons){
+          if(TMath::Abs(WlikePos_muGen_status3.Eta())<WMass::etaMaxMuons){
             for(int k=0;k<WMass::NFitVar;k++)
               common_stuff::plot1D(Form("hWlike%s_%sNonScaled_3_Mu1GenCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                                     WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
             
-            if(TMath::Abs(neutrinoGen_status3.Eta())<submuon_eta_cut){
+            if(TMath::Abs(WlikePos_neutrinoGen_status3.Eta())<submuon_eta_cut){
               for(int k=0;k<WMass::NFitVar;k++)
                 common_stuff::plot1D(Form("hWlike%s_%sNonScaled_4_Mu2GenCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                                       WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
@@ -551,17 +564,17 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       //------------------------------------------------------
       if( evtHasGoodVtx && evtHasTrg 
           // SYMMETRIC CUTS ADDED HERE TO SPEED UP THE CODE
-          // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4
-          && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
+          // && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<2.4
+          && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
           && MuPos_charge != MuNeg_charge
           && MuPosIsTight && MuPos_dxy<0.02
           && MuNegIsTight && MuNeg_dxy<0.02
         ){ // good reco event
         
-        if(!(TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
-          && muTrg
-          && muRelIso<0.12 && neutrinoRelIso<0.5
-          && muNoCorr.Pt()>0))
+        if(!(TMath::Abs(WlikePos_muCorrCentral.Eta())<WMass::etaMaxMuons
+          && WlikePos_muTrg
+          && WlikePos_muRelIso<0.12 && WlikePos_neutrinoRelIso<0.5
+          && WlikePos_muNoCorr.Pt()>0))
           continue;
 
         for(int n=0; n<WMass::KalmanNvariations; n++){
@@ -820,9 +833,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               Z_metCentral.SetPtEtaPhiM(met_trasvCentral,0,metphi_trasvCentral,0);
               neutrino_trasv.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
               neutrino_trasvCentral.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
-              mu_trasv.SetPtEtaPhiM(muCorr.Pt(),0,muCorr.Phi(),0);
-              mu_trasvCentral.SetPtEtaPhiM(muCorrCentral.Pt(),0,muCorrCentral.Phi(),0);
-              mu_trasvNoCorr.SetPtEtaPhiM(muNoCorr.Pt(),0,muNoCorr.Phi(),0);
+              mu_trasv.SetPtEtaPhiM(WlikePos_muCorr.Pt(),0,WlikePos_muCorr.Phi(),0);
+              mu_trasvCentral.SetPtEtaPhiM(WlikePos_muCorrCentral.Pt(),0,WlikePos_muCorrCentral.Phi(),0);
+              mu_trasvNoCorr.SetPtEtaPhiM(WlikePos_muNoCorr.Pt(),0,WlikePos_muNoCorr.Phi(),0);
 
               Wlike_met = neutrino_trasv + Z_met + mu_trasvNoCorr - mu_trasv; // taking into account muon correction into W_met
               Wlike_metCentral = neutrino_trasvCentral + Z_metCentral + mu_trasvNoCorr - mu_trasvCentral;  // taking into account muon correction into W_met
@@ -833,31 +846,31 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             
               // Define MtLin
               double coeff=2;
-              double MTFirstOrder_central = common_stuff::getMTFirstOrder(muCorrCentral.Pt(), muCorrCentral.Phi(), Wlike_metCentral.Pt() ,Wlike_metCentral.Phi(), coeff);
-              double MTFirstOrder = common_stuff::getMTFirstOrder(muCorr.Pt(), muCorr.Phi(), Wlike_met.Pt(),Wlike_met.Phi(), coeff);
+              double MTFirstOrder_central = common_stuff::getMTFirstOrder(WlikePos_muCorrCentral.Pt(), WlikePos_muCorrCentral.Phi(), Wlike_metCentral.Pt() ,Wlike_metCentral.Phi(), coeff);
+              double MTFirstOrder = common_stuff::getMTFirstOrder(WlikePos_muCorr.Pt(), WlikePos_muCorr.Phi(), Wlike_met.Pt(),Wlike_met.Phi(), coeff);
               
               //------------------------------------------------------
               // Variables to fill the histos (pT, mT, MET)
               //------------------------------------------------------
-              // double Wlike_var_jacobian[] = {2*muCorr.Pt()/WMass::ZMassCentral_MeV*1e3,Wlike.Mt()/WMass::ZMassCentral_MeV*1e3,2*Wlike_met.Pt()/WMass::ZMassCentral_MeV*1e3,MTFirstOrder/WMass::ZMassCentral_MeV*1e3};
-              double Wlike_var_NotScaled[] = {muCorr.Pt(),Wlike.Mt(),Wlike_met.Pt(),MTFirstOrder};
+              // double Wlike_var_jacobian[] = {2*WlikePos_muCorr.Pt()/WMass::ZMassCentral_MeV*1e3,Wlike.Mt()/WMass::ZMassCentral_MeV*1e3,2*Wlike_met.Pt()/WMass::ZMassCentral_MeV*1e3,MTFirstOrder/WMass::ZMassCentral_MeV*1e3};
+              double Wlike_var_NotScaled[] = {WlikePos_muCorr.Pt(),Wlike.Mt(),Wlike_met.Pt(),MTFirstOrder};
               // cout << "Wlike_var_NotScaled[2]= " << Wlike_var_NotScaled[2] << endl;
 
               //------------------------------------------------------
               // Variables to define the box cut (pT, mT, MET)
               //------------------------------------------------------
-              double Wlike_var_NotScaledCentral[] = {muCorrCentral.Pt(),WlikeCentral.Mt(),Wlike_metCentral.Pt(),MTFirstOrder_central}; // Zcorr would be TEMP !!!!
+              double Wlike_var_NotScaledCentral[] = {WlikePos_muCorrCentral.Pt(),WlikeCentral.Mt(),Wlike_metCentral.Pt(),MTFirstOrder_central}; // Zcorr would be TEMP !!!!
               
               //------------------------------------------------------
               // good pair within acceptance cuts for both muons
               //------------------------------------------------------
               if( ZcorrCentral.M()>50
-                  && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
-                  && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
+                  && TMath::Abs(WlikePos_muCorrCentral.Eta())<WMass::etaMaxMuons
+                  && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
                   && MuPos_charge != MuNeg_charge
-                  && muTrg
-                  && muCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio 
-                  && neutrinoCorrCentral.Pt()>10 
+                  && WlikePos_muTrg
+                  && WlikePos_muCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio 
+                  && WlikePos_neutrinoCorrCentral.Pt()>10 
                   // && noTrgExtraMuonsLeadingPt<10 // REMOVED BECAUSE OF MARKUS
                 ){
                 //------------------------------------------------------
@@ -865,7 +878,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 //------------------------------------------------------
                 if(    MuPosIsTight && MuPos_dxy<0.02
                     && MuNegIsTight && MuNeg_dxy<0.02
-                    && muRelIso<0.12 && neutrinoRelIso<0.5
+                    && WlikePos_muRelIso<0.12 && WlikePos_neutrinoRelIso<0.5
                   ){
                   for(int k=0;k<WMass::NFitVar;k++)
                     if(m==m_start && n==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_5_RecoCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
@@ -1065,7 +1078,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             if(polarization_checks){
                               
                               common_stuff::plot1D(Form("hWlike%s_Eta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_all",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                    muCorr.Pt(), weight, h_1d, 50, -2.5, 2.5 );
+                                                    WlikePos_muCorr.Pt(), weight, h_1d, 50, -2.5, 2.5 );
                               
                               if(TMath::Abs(costh_CS)<0.2){
                                 
