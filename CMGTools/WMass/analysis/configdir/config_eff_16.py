@@ -11,7 +11,7 @@ efficiency_toys = 100  # 0=No, >1=Yes
 MuonCorrGlobalScaleNsigma = 0  # vary global muon scale    (0=no)
 MuonCorrKalmanNvarsNsigma = 0  # vary each muon fit eigenv (0=no)
 
-WlikeCharge = 1  # Charge of the Wlike (+1,-1)
+RemoveWlikePosNegOverlap = 1  # choose whether to remove overlapping events for Wlike pos-neg
 
 ### RECOIL
 useRecoilCorr = 2  # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys

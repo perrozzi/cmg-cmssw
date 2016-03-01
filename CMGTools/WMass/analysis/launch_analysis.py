@@ -120,9 +120,9 @@ if(hasattr(config, 'MuonCorrAsDATA')):
 WMassNSteps = "5"
 if(hasattr(config, 'WMassNSteps')):
   WMassNSteps = str(config.WMassNSteps)  # 0=No, >1=Yes
-WlikeCharge = 1
-if(hasattr(config, 'WlikeCharge')):
-  WlikeCharge = int(config.WlikeCharge)  # 0=No, >1=Yes
+RemoveWlikePosNegOverlap = 1
+if(hasattr(config, 'RemoveWlikePosNegOverlap')):
+  RemoveWlikePosNegOverlap = int(config.RemoveWlikePosNegOverlap)  # 0=No, >1=Yes
 etaMaxMuons = "0.9"
 if(hasattr(config, 'etaMaxMuons')):
   etaMaxMuons = str(config.etaMaxMuons)  # 0=No, >1=Yes
@@ -289,9 +289,9 @@ and int(RecoilCorrVarDiagoParSigmas) == 0 :
   print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
   sys.exit(1)
 
-if (int(WlikeCharge) != 1) and (int(WlikeCharge) != -1) :
-  print "ERROR: Asked for a Wlike of charge", WlikeCharge
-  print "Check the 'WlikeCharge' variable"
+if (int(RemoveWlikePosNegOverlap) != 0) and (int(RemoveWlikePosNegOverlap) != 1) :
+  print "ERROR: Asked for a Wlike of charge", RemoveWlikePosNegOverlap
+  print "Check the 'RemoveWlikePosNegOverlap' variable"
   sys.exit(1)
 
 # Muon internal (Zanalisys wants them this way)
@@ -316,10 +316,10 @@ if (int(efficiency_toys) > 0) and not ((int(useEffSF) >= 13) and (int(useEffSF) 
 
 outfolder_name = outfolder_prefix
 
-if (int(WlikeCharge) == 1):
-  outfolder_name+="_muPos"
+if (int(RemoveWlikePosNegOverlap) == 1):
+  outfolder_name+="_noOverlap"
 else:
-  outfolder_name+="_muNeg"
+  outfolder_name+="_Overlap"
 
 if(int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_pfmet";
@@ -577,7 +577,7 @@ if(runWanalysis or runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.h from includes/common.h"
     shutil.copyfile("includes/common.h", "JobOutputs/"+outfolder_name+"/common.h");
     # Edit template
-    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+efficiency_toys+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
+    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+efficiency_toys+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RemoveWlikePosNegOverlap)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
   print ""
 

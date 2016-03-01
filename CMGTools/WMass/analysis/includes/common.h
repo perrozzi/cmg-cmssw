@@ -34,7 +34,7 @@ namespace WMass{
   static const int PDF_members = PAR_PDF_MEMBERS;
   static const int NVarRecoilCorr = 1; // not used in main chain anymore
   
-  static const int WlikeCharge = PAR_WLIKE_CHARGE;
+  static const int RemoveWlikePosNegOverlap = PAR_WLIKE_CHARGE;
   
   static const int WpTcut = 15;
   

@@ -12,7 +12,7 @@ MuonCorrGlobalScaleNsigma = 0  # vary global muon scale    (0=no)
 MuonCorrKalmanNvarsNsigma = 0  # vary each muon fit eigenv (0=no)
 MuonCorrAsDATA = 1  # 0=Correct as whatever it really is, 1=Correct as DATA
 
-WlikeCharge = 1  # Charge of the Wlike (+1,-1)
+RemoveWlikePosNegOverlap = 1  # choose whether to remove overlapping events for Wlike pos-neg
 
 ### RECOIL
 useRecoilCorr = 2  # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys
