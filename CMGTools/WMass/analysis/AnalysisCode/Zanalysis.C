@@ -214,19 +214,31 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // retrieve boson pT SF
   //------------------------------------------------------
   TH1D* hZPtSF_WlikePos;
+  TH1D* hZPtSF_WlikeNeg;
   if(usePtSF==0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
 
-    TString filename=Form("../utils/Zpt_%soutput_%s_%s.root",useAlternateEventXweights?"altern_":"",sampleName.Data(),"Pos");
-    cout << "hZPtSF_central = " << filename.Data() << endl;
+    TString filenamePos = Form("../utils/Zpt_%soutput_%s_Pos.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
+    TString filenameNeg = Form("../utils/Zpt_%soutput_%s_Neg.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
+    cout << "hZPtSF_central = " << filenamePos << " and " << filenameNeg << endl;
 
-    TFile* finZPtSF = new TFile(filename.Data());
-    if(!finZPtSF){
-      cout << "ERROR: file " << filename << " is missing, impossible to retrieve Zpt reweighting factors" << endl;
+    TFile* finZPtSFPos = new TFile(filenamePos.Data());
+    if(!finZPtSFPos){
+      cout << "ERROR: file " << filenamePos << " is missing, impossible to retrieve Zpt reweighting factors" << endl;
       return;
     }
-    hZPtSF_WlikePos=(TH1D*) finZPtSF->Get(Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188","Pos")); hZPtSF_WlikePos->Sumw2();
+    TFile* finZPtSFNeg = new TFile(filenameNeg.Data());
+    if(!finZPtSFNeg){
+      cout << "ERROR: file " << filenameNeg << " is missing, impossible to retrieve Zpt reweighting factors" << endl;
+      return;
+    }
+    hZPtSF_WlikePos = (TH1D*)finZPtSFPos->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"); hZPtSF_WlikePos->Sumw2();
+    hZPtSF_WlikeNeg = (TH1D*)finZPtSFNeg->Get("hWlikeNeg_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"); hZPtSF_WlikeNeg->Sumw2();
     
-  } else hZPtSF_WlikePos = new TH1D("hZPtSF_WlikePos","hZPtSF_WlikePos",10,0,1);
+  }
+  else {
+    hZPtSF_WlikePos = new TH1D("hZPtSF_WlikePos","hZPtSF_WlikePos",10,0,1);
+    hZPtSF_WlikeNeg = new TH1D("hZPtSF_WlikeNeg","hZPtSF_WlikeNeg",10,0,1);
+  }
 
 
   //------------------------------------------------------
@@ -251,11 +263,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       cout << "ERROR: file " << filenameNeg << " is missing, impossible to retrieve Zpol reweighting factors" << endl;
       return;
     }
-    hZPolSF_WlikePos = (TH2D*)finZPolSFPos->Get("hWlikePos_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188");
-    hZPolSF_WlikePos->Sumw2();
-    hZPolSF_WlikeNeg = (TH2D*)finZPolSFNeg->Get("hWlikeNeg_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188");
-    hZPolSF_WlikePos->Sumw2();
-
+    
+    hZPolSF_WlikePos = (TH2D*)finZPolSFPos->Get("hWlikePos_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"); hZPolSF_WlikePos->Sumw2();
+    hZPolSF_WlikeNeg = (TH2D*)finZPolSFNeg->Get("hWlikeNeg_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"); hZPolSF_WlikeNeg->Sumw2();
   }
   else {
     hZPolSF_WlikePos = new TH2D("hZPolSF_WlikePos","hZPolSF_WlikePos",10,0,1,10,0,1);
