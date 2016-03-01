@@ -642,6 +642,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             corrector_KalmanParam->smear(muNegCorr);
           }
 
+          // at least one of the 2 w-like muons must be in the final "box" range
+          if(
+              !(WlikePos_muCorr.Pt() > WMass::sel_xmin[0]*ZWmassRatio && WlikePos_muCorr.Pt() < WMass::sel_xmax[0]*ZWmassRatio)
+              &&
+              !(WlikeNeg_muCorr.Pt() > WMass::sel_xmin[0]*ZWmassRatio && WlikeNeg_muCorr.Pt() < WMass::sel_xmax[0]*ZWmassRatio)
+            ) 
+            continue;
+          
           for(int m=m_start; m<m_end; m++){
 
             TString RecoilVar_str = "";
