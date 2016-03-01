@@ -233,21 +233,34 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Polarization reweighting
   //------------------------------------------------------
 
-  TH2D* hZPolSF_WlikePos,hZPolSF_WlikeNeg;
+  TH2D* hZPolSF_WlikePos;
+  TH2D* hZPolSF_WlikeNeg;
   if(reweight_polarization==1 && sampleName.Contains("DYJetsPow")) {
 
-    TString filename = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_%s_PtSFCorr0.root",useAlternateEventXweights?"altern_":"",sampleName.Data(),"Pos");
-    cout << "hZpolSF_central = " << filename.Data() << endl;
+    TString filenamePos = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_Pos_PtSFCorr0.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
+    TString filenameNeg = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_Neg_PtSFCorr0.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
+    cout << "hZpolSF_central = " << filenamePos << " and " << filenameNeg << endl;
 
-    TFile* finZPolSF = new TFile(filename.Data());
-    if(!finZPolSF){
-      cout << "ERROR: file " << filename << " is missing, impossible to retrieve Zpol reweighting factors" << endl;
+    TFile* finZPolSFPos = new TFile(filenamePos.Data());
+    if(!finZPolSFPos){
+      cout << "ERROR: file " << filenamePos << " is missing, impossible to retrieve Zpol reweighting factors" << endl;
       return;
     }
-    hZPolSF_WlikePos=(TH2D*) finZPolSF->Get(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188","Pos")); hZPolSF_WlikePos->Sumw2();
+    TFile* finZPolSFNeg = new TFile(filenameNeg.Data());
+    if(!finZPolSFNeg){
+      cout << "ERROR: file " << filenameNeg << " is missing, impossible to retrieve Zpol reweighting factors" << endl;
+      return;
+    }
+    hZPolSF_WlikePos = (TH2D*)finZPolSFPos->Get("hWlikePos_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188");
+    hZPolSF_WlikePos->Sumw2();
+    hZPolSF_WlikeNeg = (TH2D*)finZPolSFNeg->Get("hWlikeNeg_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188");
+    hZPolSF_WlikePos->Sumw2();
 
   }
-  else hZPolSF_WlikePos = new TH2D("hZPolSF_WlikePos","hZPolSF_WlikePos",10,0,1,10,0,1);
+  else {
+    hZPolSF_WlikePos = new TH2D("hZPolSF_WlikePos","hZPolSF_WlikePos",10,0,1,10,0,1);
+    hZPolSF_WlikeNeg = new TH2D("hZPolSF_WlikeNeg","hZPolSF_WlikeNeg",10,0,1,10,0,1);
+  }
   
   //------------------------------------------------------
   // Set initial and final number of entries
@@ -366,21 +379,15 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //    1                  y               y               1      pos
     //    2                  n               y               2      neg
     //    3                  y               y               3      neg
-    //    4                  n               y               0      pos
-    //    5                  y               y               1      pos
-    //    6                  n               y               2      neg
-    //    7                  y               y               3      neg
     
-    // bool isChargePos = WMass::RemoveWlikePosNegOverlap==1;
-    bool isChargePos = true;
+    bool isChargePos;
     switch(jentry%4){
       case 0:
       case 1:
-        // good_WlikePos = false;
+        isChargePos = true;
       break;
       case 2:
       case 3:
-        // good_WlikeNeg = false;
         isChargePos = false;
       break;
     }
@@ -412,10 +419,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       return;
     }
     
-    // WLIKE CHARGE SYMMETRIC VARIABLES
     met_trasvCentral = met_trasv;
     metphi_trasvCentral = metphi_trasv;
 
+    // WLIKE CHARGE SYMMETRIC VARIABLES
     muPosNoCorr.SetPtEtaPhiM(MuPos_pt,MuPos_eta,MuPos_phi,MuPos_mass);
     muNegNoCorr.SetPtEtaPhiM(MuNeg_pt,MuNeg_eta,MuNeg_phi,MuNeg_mass);
     ZNocorr = muPosNoCorr + muNegNoCorr;
@@ -447,19 +454,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //---------------- Invariant Mass weight
     // cout << "mass= " << ZGen_PostFSR_mass << " use_syst_ewk_Alcaraz = "<< use_syst_ewk_Alcaraz << endl;
     if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && sampleName.Contains("DYJetsPow")){
-      double ewk_weight_central=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1;
+      double ewk_weight_central = (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200)?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1;
       // cout << "ewk_weight_central = ewk_weight_central ("<<ewk_weight_central<<")" << endl;
       evt_weight *= ewk_weight_central;
       if(use_syst_ewk_Alcaraz>0){
-        double ewk_weight_syst=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_syst->Interpolate(ZGen_PostFSR_mass):1;
+        double ewk_weight_syst = (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200)?hZmassSF_syst->Interpolate(ZGen_PostFSR_mass):1;
         // cout << "evt_weight_original *= ewk_weight_syst ("<<ewk_weight_syst<<")" << endl;
-          evt_weight *= ewk_weight_syst;
+        evt_weight *= ewk_weight_syst;
         if(use_syst_ewk_Alcaraz>30){ // 3 times the corrections (3 sigmas)
           // cout << "evt_weight_original *= (ewk_weight_syst*ewk_weight_syst)" << endl;
           evt_weight *= (ewk_weight_syst*ewk_weight_syst);
       
-        // hZmassSF_central->Print();
-        // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1) << endl;
+          // hZmassSF_central->Print();
+          // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1) << endl;
         }
       }
     }
