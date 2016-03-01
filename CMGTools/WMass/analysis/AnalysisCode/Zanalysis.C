@@ -1255,36 +1255,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       }
                     }
                   }
-                }else if(controlplots && m==m_start && n==0 && isChargePos){
-                  // NOTE: ONLY DONE FOR WLIKEPOS !!!
-                  
-                  // Iso and dxy for muons which fail either tight requirement, isolation or dxy cut
-                  if(pfmetWlikePos>25 && WlikePos_pt<20){
-                    // if( (TMath::Abs(zmass1 - WMass::WMassCentral_MeV) > 1)) continue;
-                  }
-
-                  //------------------------------------------------------
-                  // Control plots in the QCD enriched region
-                  //------------------------------------------------------
-                  // invert cuts to select QCD enriched region, no cuts on met or jet
-                  if(
-                    MuPosRelIso>0.12 // single muon cuts (inverted iso (is <0.5 for signal) , no tight requirement)
-                    && MuPos_dxy>0.02 // single muon cuts (MuPosIsTight contains dxy < 0.2 cut)
-                    && WlikePos_pt<20/* *WMass::ZMassCentral_MeV/iZmass_GeV */ 
-                    ){
-
-                    // for(int k=0;k<WMass::NFitVar;k++)
-                      // common_stuff::plot1D(Form("hWlikePos_%sScaled_QCD_eta%s_%d",WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
-                                          // MuPos_var_jacobian[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, nbins, bins_scaled[k] );
-
-                    //------------------------------------------------------
-                    // QCD distributions for central W mass
-                    //------------------------------------------------------
-
-                    fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::ZMassCentral_MeV, eta_str, WMass::nSigOrQCD_str[1],Form("WlikePos%s_8_JetCut",WCharge_str.Data()));
-
-                  } // end if for qcd enriched
-                } // end else for muon cuts (sig or qcd enriched)
+                } // end full ID and tight requirements
               } // end if for good pair within acceptance cuts for both muons
             } // end efficiency toys
           } // end RecoilCorr params loop
