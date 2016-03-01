@@ -138,6 +138,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
   #endif
   
+  // Booleans for MC signal samples, we use these a lot:
+  bool isPowheg   = sampleName.Contains("DYJetsPow");
+  bool isMadgraph = sampleName.Contains("DYJetsMadSig"); 
+  bool isPowOrMad = isPowheg || isMadgraph;
+  
   //------------------------------------------------------
   // retrieve efficiencies SF
   //------------------------------------------------------
@@ -215,7 +220,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   TH1D* hZPtSF_WlikePos;
   TH1D* hZPtSF_WlikeNeg;
-  if(usePtSF==0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
+  if(usePtSF==0 && isPowOrMad) {
 
     TString filenamePos = Form("../utils/Zpt_%soutput_%s_Pos.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
     TString filenameNeg = Form("../utils/Zpt_%soutput_%s_Neg.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
@@ -247,7 +252,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   TH2D* hZPolSF_WlikePos;
   TH2D* hZPolSF_WlikeNeg;
-  if(reweight_polarization==1 && sampleName.Contains("DYJetsPow")) {
+  if(reweight_polarization==1 && isPowheg) {
 
     TString filenamePos = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_Pos_PtSFCorr0.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
     TString filenameNeg = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_Neg_PtSFCorr0.root",useAlternateEventXweights?"altern_":"",sampleName.Data());
@@ -315,7 +320,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
   TString generatorSuffix="_powheg";
-  if (sampleName.Contains("DYJetsMadSig"))
+  if (isMadgraph)
     generatorSuffix="_madgraph";
 
   RecoilCorrector*  correctorRecoil_Z; // TYPE2
@@ -456,7 +461,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     //---------------- Invariant Mass weight
     // cout << "mass= " << ZGen_PostFSR_mass << " use_syst_ewk_Alcaraz = "<< use_syst_ewk_Alcaraz << endl;
-    if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && sampleName.Contains("DYJetsPow")){
+    if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && isPowheg){
       double ewk_weight_central = (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200)?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1;
       // cout << "ewk_weight_central = ewk_weight_central ("<<ewk_weight_central<<")" << endl;
       evt_weight *= ewk_weight_central;
@@ -475,7 +480,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
     //---------------- PT weight (usePtSF = -1; # Boson pT reweighting: -1=none, 0=data, 1...=other options)
     // OBSOLETE setting
-    if ((IS_MC_CLOSURE_TEST || isMCorDATA==0) && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))) {
+    if ((IS_MC_CLOSURE_TEST || isMCorDATA==0) && isPowOrMad) {
       if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */)
         evt_weight *= hZPtSF_WlikePos->Interpolate(ZGen_pt)>0?hZPtSF_WlikePos->Interpolate(ZGen_pt):1;
       else if(usePtSF==1 && ZGen_pt<ZPt_cut){
@@ -493,12 +498,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
     
     //---------------- EWK weight
-    if(use_syst_ewk_Alcaraz && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+    if(use_syst_ewk_Alcaraz && isPowOrMad){
       if(use_syst_ewk_Alcaraz==100 && FSRWeight>-99){ 
         evt_weight *= FSRWeight;
         // cout << "FSRWeight= " << FSRWeight << endl;
-      }else if(use_syst_ewk_Alcaraz==0){
-      }        
+      }
     }
 
     //------------------------------------------------------
@@ -716,7 +720,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               // if(fabs(ZGen_rap)>=1.75 && fabs(ZGen_rap)<=2.0) rapBin=200;
               // if(fabs(ZGen_rap)>2.0) rapBin=201;
               
-              if(use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
+              if(use_PForNoPUorTKmet<3 && isPowOrMad){ // use MET corrections if required
                 
                 if(use_PForNoPUorTKmet==0){
                   met_trasv = pfmet;
@@ -893,7 +897,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 //------------------------------------------------------------------------------------------------
                 
                 if(m==m_start && n==0) {
-                  if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF_WlikePos && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+                  if(usePtSF!=-1  && usePtSF!=1 && usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && isPowOrMad)
                     evt_weight *= hZPtSF_WlikePos->Interpolate(ZcorrCentral.Pt())>0?hZPtSF_WlikePos->Interpolate(ZcorrCentral.Pt()):1;
 
                   // Boson Polarization
@@ -901,7 +905,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                   // cout << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity() << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt() << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity()) << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt()) << " costh_CS= " << costh_CS << " phi_CS= " << phi_CS << endl;
 
-                  if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))){
+                  if(reweight_polarization==1 && isPowOrMad){
                     double interpolated_weight = hZPolSF_WlikePos->Interpolate(costh_CS, TMath::Abs(Zcorr.Rapidity()));
                     evt_weight *= interpolated_weight>0 ? interpolated_weight : 1;
                   }
@@ -1070,7 +1074,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           //------------------------------------------------------
                           for(int j=0; j<2*WMass::WMassNSteps+1; j++){
 
-                            if(!(sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")) && WMass::WMassNSteps!=j) continue;
+                            if(!isPowOrMad && WMass::WMassNSteps!=j) continue;
                             int jZmass_MeV = WMass::Zmass_values_array[j];
                             double iZmass_GeV = WMass::Zmass_values_array[j]/1e3;
                             
@@ -1368,7 +1372,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   hZPtSF_WlikePos->Write();
 
-  if(!(sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+  if(!isPowOrMad){
     TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
     for(int i=0; i<max(1, WMass::efficiency_toys); i++){
       TString effToy_str = "";
