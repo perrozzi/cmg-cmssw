@@ -768,6 +768,43 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
             }
 
+            //------------------------------------------------------
+            // Define mu+, mu-, Z
+            //------------------------------------------------------
+            TLorentzVector mu_trasv,mu_trasvCentral,mu_trasvNoCorr,neutrino_trasv,neutrino_trasvCentral;
+            
+            Z_met.SetPtEtaPhiM(met_trasv,0,metphi_trasv,0);
+            Z_metCentral.SetPtEtaPhiM(met_trasvCentral,0,metphi_trasvCentral,0);
+            neutrino_trasv.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
+            neutrino_trasvCentral.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
+            mu_trasv.SetPtEtaPhiM(WlikePos_muCorr.Pt(),0,WlikePos_muCorr.Phi(),0);
+            mu_trasvCentral.SetPtEtaPhiM(WlikePos_muCorrCentral.Pt(),0,WlikePos_muCorrCentral.Phi(),0);
+            mu_trasvNoCorr.SetPtEtaPhiM(WlikePos_muNoCorr.Pt(),0,WlikePos_muNoCorr.Phi(),0);
+
+            Wlike_met = neutrino_trasv + Z_met + mu_trasvNoCorr - mu_trasv; // taking into account muon correction into W_met
+            Wlike_metCentral = neutrino_trasvCentral + Z_metCentral + mu_trasvNoCorr - mu_trasvCentral;  // taking into account muon correction into W_met
+            Wlike_met.SetPtEtaPhiM(Wlike_met.Pt(),0,Wlike_met.Phi(),0); // just to be sure
+            Wlike_metCentral.SetPtEtaPhiM(Wlike_metCentral.Pt(),0,Wlike_metCentral.Phi(),0); // just to be sure
+            Wlike = mu_trasv + Wlike_met;
+            WlikeCentral = mu_trasvCentral + Wlike_metCentral;
+          
+            // Define MtLin
+            double coeff=2;
+            double MTFirstOrder_central = common_stuff::getMTFirstOrder(WlikePos_muCorrCentral.Pt(), WlikePos_muCorrCentral.Phi(), Wlike_metCentral.Pt() ,Wlike_metCentral.Phi(), coeff);
+            double MTFirstOrder = common_stuff::getMTFirstOrder(WlikePos_muCorr.Pt(), WlikePos_muCorr.Phi(), Wlike_met.Pt(),Wlike_met.Phi(), coeff);
+            
+            //------------------------------------------------------
+            // Variables to fill the histos (pT, mT, MET)
+            //------------------------------------------------------
+            // double Wlike_var_jacobian[] = {2*WlikePos_muCorr.Pt()/WMass::ZMassCentral_MeV*1e3,Wlike.Mt()/WMass::ZMassCentral_MeV*1e3,2*Wlike_met.Pt()/WMass::ZMassCentral_MeV*1e3,MTFirstOrder/WMass::ZMassCentral_MeV*1e3};
+            double Wlike_var_NotScaled[] = {WlikePos_muCorr.Pt(),Wlike.Mt(),Wlike_met.Pt(),MTFirstOrder};
+            // cout << "Wlike_var_NotScaled[2]= " << Wlike_var_NotScaled[2] << endl;
+
+            //------------------------------------------------------
+            // Variables to define the box cut (pT, mT, MET)
+            //------------------------------------------------------
+            double Wlike_var_NotScaledCentral[] = {WlikePos_muCorrCentral.Pt(),WlikeCentral.Mt(),Wlike_metCentral.Pt(),MTFirstOrder_central}; // Zcorr would be TEMP !!!!
+            
             //-----------------------------
             // Throw toys for efficiency (i)
             //------------------------------
@@ -837,44 +874,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               // << " eff_ISO_SF= " << eff_ISO_SF
               // << " eff_TRG_SF= " << eff_TRG_SF
               // << endl;
-              
-              //------------------------------------------------------
-              // Define mu+, mu-, Z
-              //------------------------------------------------------
-              TLorentzVector mu_trasv,mu_trasvCentral,mu_trasvNoCorr,neutrino_trasv,neutrino_trasvCentral;
-              
-              Z_met.SetPtEtaPhiM(met_trasv,0,metphi_trasv,0);
-              Z_metCentral.SetPtEtaPhiM(met_trasvCentral,0,metphi_trasvCentral,0);
-              neutrino_trasv.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
-              neutrino_trasvCentral.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
-              mu_trasv.SetPtEtaPhiM(WlikePos_muCorr.Pt(),0,WlikePos_muCorr.Phi(),0);
-              mu_trasvCentral.SetPtEtaPhiM(WlikePos_muCorrCentral.Pt(),0,WlikePos_muCorrCentral.Phi(),0);
-              mu_trasvNoCorr.SetPtEtaPhiM(WlikePos_muNoCorr.Pt(),0,WlikePos_muNoCorr.Phi(),0);
-
-              Wlike_met = neutrino_trasv + Z_met + mu_trasvNoCorr - mu_trasv; // taking into account muon correction into W_met
-              Wlike_metCentral = neutrino_trasvCentral + Z_metCentral + mu_trasvNoCorr - mu_trasvCentral;  // taking into account muon correction into W_met
-              Wlike_met.SetPtEtaPhiM(Wlike_met.Pt(),0,Wlike_met.Phi(),0); // just to be sure
-              Wlike_metCentral.SetPtEtaPhiM(Wlike_metCentral.Pt(),0,Wlike_metCentral.Phi(),0); // just to be sure
-              Wlike = mu_trasv + Wlike_met;
-              WlikeCentral = mu_trasvCentral + Wlike_metCentral;
-            
-              // Define MtLin
-              double coeff=2;
-              double MTFirstOrder_central = common_stuff::getMTFirstOrder(WlikePos_muCorrCentral.Pt(), WlikePos_muCorrCentral.Phi(), Wlike_metCentral.Pt() ,Wlike_metCentral.Phi(), coeff);
-              double MTFirstOrder = common_stuff::getMTFirstOrder(WlikePos_muCorr.Pt(), WlikePos_muCorr.Phi(), Wlike_met.Pt(),Wlike_met.Phi(), coeff);
-              
-              //------------------------------------------------------
-              // Variables to fill the histos (pT, mT, MET)
-              //------------------------------------------------------
-              // double Wlike_var_jacobian[] = {2*WlikePos_muCorr.Pt()/WMass::ZMassCentral_MeV*1e3,Wlike.Mt()/WMass::ZMassCentral_MeV*1e3,2*Wlike_met.Pt()/WMass::ZMassCentral_MeV*1e3,MTFirstOrder/WMass::ZMassCentral_MeV*1e3};
-              double Wlike_var_NotScaled[] = {WlikePos_muCorr.Pt(),Wlike.Mt(),Wlike_met.Pt(),MTFirstOrder};
-              // cout << "Wlike_var_NotScaled[2]= " << Wlike_var_NotScaled[2] << endl;
-
-              //------------------------------------------------------
-              // Variables to define the box cut (pT, mT, MET)
-              //------------------------------------------------------
-              double Wlike_var_NotScaledCentral[] = {WlikePos_muCorrCentral.Pt(),WlikeCentral.Mt(),Wlike_metCentral.Pt(),MTFirstOrder_central}; // Zcorr would be TEMP !!!!
-              
+                            
               //------------------------------------------------------
               // good pair within acceptance cuts for both muons
               //------------------------------------------------------
