@@ -9,8 +9,7 @@
 #include "Zanalysis.h"
 #include "common.h"
 //#include "common_stuff.h"
-//#include "MuScleFitCorrector.h"
-#include "KalmanCalibrator.h"
+//#include "KalmanCalibrator.h"
 #include "KalmanCalibratorParam.h"
 #include "RecoilCorrector.h"
 #include "HTransformToHelicityFrame.c"
@@ -51,7 +50,7 @@ const bool useAlternateEventXweights = false; // this is meant to save only the 
 const bool doRecoilMassVariations = false; // this is meant to save Recoil distribution for different mass hypotheses
 
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int varyMuonCorrNsigma, int MuonCorrAsDATA, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, /*unused*/ int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int varyMuonCorrNsigma, int MuonCorrAsDATA, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
 {
 
   if (fChain == 0) return;
@@ -299,18 +298,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Initilize momentum scale corrections
   //------------------------------------------------------
   // To get the central value of the momentum correction
-  // TString MuscleCard = (IS_MC_CLOSURE_TEST || isMCorDATA==0) ? "MuScleFit_2011_MC_44X" : "MuScleFit_2011_DATA_44X";
-  // TString fitParametersFile = MuscleCard+".txt";
-  // MuScleFitCorrector *corrector;
-  // if(useMomentumCorr==2){
-    // cout << "using MuscleFit card " << fitParametersFile << endl;
-    // corrector = new MuScleFitCorrector(fitParametersFile);
+  // KalmanCalibrator *corrector_Kalman;
+  // if(useMomentumCorr==3){
+  //   cout << "using Kalman Calibrator" << endl;
+  //   corrector_Kalman = new KalmanCalibrator(isMCorDATA==0?false:true); // True for data , //False for MC
   // }
-  KalmanCalibrator *corrector_Kalman;
-  if(useMomentumCorr==3){
-    cout << "using Kalman Calibrator" << endl;
-    corrector_Kalman = new KalmanCalibrator(isMCorDATA==0?false:true); // True for data , //False for MC
-  }
   KalmanCalibratorParam *corrector_KalmanParam;
   if(useMomentumCorr==4){
     cout << "using Kalman Calibrator Param" << endl;
@@ -613,31 +605,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           // Apply muon corrections
           //------------------------------------------------------------------------------------------------
           // use rochester corrections if required
-          if(useMomentumCorr<=2){
-            cout << "ERROR: useMomentumCorr<=2 unsupported" << endl;
+          if(useMomentumCorr<=3){
+            cout << "ERROR: useMomentumCorr<=3 unsupported" << endl;
             return;
-          }else if(useMomentumCorr==3){ // use Momentum scale corrections from Kalman calibrator if required
-            
-            if(n==0){
-              corrector_Kalman->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
-              corrector_Kalman->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
-              corrector_Kalman->smear(muPosCorrCentral);
-              corrector_Kalman->smear(muNegCorrCentral);
-            }
-            if(varyMuonCorrNsigma!=0){
-              if(WMass::KalmanNvariations==1){
-                corrector_Kalman->varyClosure(varyMuonCorrNsigma);
-              }else{
-                muPosCorr = muPosNoCorr;
-                muNegCorr = muNegNoCorr;
-                corrector_Kalman->reset(); 
-                corrector_Kalman->vary(n,varyMuonCorrNsigma);
-              }
-            }
-            corrector_Kalman->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
-            corrector_Kalman->getCorrectedPt(muNegCorr,MuNeg_charge); //returns the corrected pt 
-            corrector_Kalman->smear(muPosCorr);
-            corrector_Kalman->smear(muNegCorr);
           }
           else if(useMomentumCorr==4){ // use Momentum scale corrections from KalmanParam calibrator if required
             
