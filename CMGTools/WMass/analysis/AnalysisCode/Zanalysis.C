@@ -51,7 +51,7 @@ const bool useAlternateEventXweights = false; // this is meant to save only the 
 const bool doRecoilMassVariations = false; // this is meant to save Recoil distribution for different mass hypotheses
 
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int varyMuonCorrNsigma, int MuonCorrAsDATA, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int varyMuonCorrNsigma, int MuonCorrAsDATA, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, /*unused*/ int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
 {
 
   if (fChain == 0) return;
@@ -174,7 +174,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH1D*hPileupSF;
 
   if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-    TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
+    TFile* finPileupSF = new TFile("../utils/pileup/pileup_reweighting_Fall11.root"); // used only to build templates
     if(!finPileupSF){
       cout << "ERROR: file ../utils/pileup/pileup_reweighting_Fall11.root is missing, impossible to retrieve pileup reweighting factors" << endl;
       return;
@@ -369,12 +369,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   cout_freq=1; // FOR DEBUGGING PURPOSE
   nentries=100; // FOR DEBUGGING PURPOSE
   cout << "couts every " << cout_freq << " events" << endl;
-  Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<=nentries; jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
-    nb = fChain->GetEntry(jentry);   nbytes += nb;
-    // if (Cut(ientry) < 0) continue;
+    fChain->GetEntry(jentry);
+    
     if(jentry%cout_freq==0){
       time_t now = time(0);
       TString dt = ctime(&now); dt.ReplaceAll("\n"," ");
@@ -456,7 +455,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     //---------------- LUMI weight
     double evt_weight = lumi_scaling;
-    // cout << "evt_weight_original " << evt_weight_original << endl;
 
     //---------------- VTX weight
     if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && npu>0)
@@ -479,33 +477,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           // cout << "evt_weight_original *= (ewk_weight_syst*ewk_weight_syst)" << endl;
           evt_weight *= (ewk_weight_syst*ewk_weight_syst);
       
-          // hZmassSF_central->Print();
-          // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1) << endl;
+          // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << ewk_weight_central << endl;
         }
       }
     }
-    //---------------- PT weight (usePtSF = -1; # Boson pT reweighting: -1=none, 0=data, 1...=other options)
-    // OBSOLETE setting
-    if ((IS_MC_CLOSURE_TEST || isMCorDATA==0) && isPowOrMad) {
-      if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */)
-        evt_weight *= hZPtSF_WlikePos->Interpolate(ZGen_pt)>0?hZPtSF_WlikePos->Interpolate(ZGen_pt):1;
-      else if(usePtSF==1 && ZGen_pt<ZPt_cut){
-        evt_weight *= TMath::Min(1+0.1*(25-ZGen_pt)/25,0.5);
-        common_stuff::plot2D(Form("weight1_vs_genpT"),
-                                        ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
-                                            h_2d, 50,0,50,50,0,2 );
-      }
-      else if(usePtSF==2 && ZGen_pt<ZPt_cut){
-        evt_weight *= (1+0.1*(ZGen_pt-25)/25);
-        common_stuff::plot2D(Form("weight2_vs_genpT"),
-                                        ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
-                                            h_2d, 50,0,50,50,0,2 );
-      }
-    }
-    
+
     //---------------- EWK weight
-    if(use_syst_ewk_Alcaraz && isPowOrMad){
-      if(use_syst_ewk_Alcaraz==100 && FSRWeight>-99){ 
+    if(isPowOrMad){
+      if(use_syst_ewk_Alcaraz==100 && FSRWeight>-99){
         evt_weight *= FSRWeight;
         // cout << "FSRWeight= " << FSRWeight << endl;
       }
@@ -588,10 +567,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     double eff_ISO_SF = 1;
     double eff_TRG_SF = 1;
 
-    // charge invariant variables
-    double& Leading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuPos_pt  : MuNeg_pt;
-    double& Leading_Mu_eta = MuPos_pt>MuNeg_pt ? MuPos_eta : MuNeg_eta;
-    double& Leading_Mu_phi = MuPos_pt>MuNeg_pt ? MuPos_phi : MuNeg_phi;
+    // Find Leading and Subleading muon
+    double&    Leading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuPos_pt  : MuNeg_pt;
+    double&    Leading_Mu_eta = MuPos_pt>MuNeg_pt ? MuPos_eta : MuNeg_eta;
+    double&    Leading_Mu_phi = MuPos_pt>MuNeg_pt ? MuPos_phi : MuNeg_phi;
     double& SubLeading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuNeg_pt  : MuPos_pt;
     double& SubLeading_Mu_eta = MuPos_pt>MuNeg_pt ? MuNeg_eta : MuPos_eta;
     double& SubLeading_Mu_phi = MuPos_pt>MuNeg_pt ? MuNeg_phi : MuPos_phi;
@@ -608,7 +587,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       //------------------------------------------------------
       if( evtHasGoodVtx && evtHasTrg 
           // SYMMETRIC CUTS ADDED HERE TO SPEED UP THE CODE
-          // && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<2.4
           && TMath::Abs(WlikePos_neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
           && MuPos_charge != MuNeg_charge
           && MuPosIsTight && MuPos_dxy<0.02
