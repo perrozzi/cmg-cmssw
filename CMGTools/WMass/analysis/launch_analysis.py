@@ -43,7 +43,7 @@ if(hasattr(config, 'use_PForNoPUorTKmet')):
   use_PForNoPUorTKmet = int(config.use_PForNoPUorTKmet)  # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0  # 0=no, 1=yes
 if(hasattr(config, 'use_LHE_weights')):
-  use_LHE_weights = int(config.use_LHE_weights)  # 0=no, 1=yes
+  use_LHE_weights = config.use_LHE_weights  # 0=no, 1=yes
 usePileupSF = 1  # 0=no, 1=yes
 if(hasattr(config, 'usePileupSF')):
   usePileupSF = int(config.usePileupSF)  # 0=no, 1=yes
@@ -59,7 +59,7 @@ if(hasattr(config, 'useEffSF')):
 ### EFFICIENCY TOYS
 efficiency_toys = 0  # 0=No, >1=Yes
 if(hasattr(config, 'efficiency_toys')):
-  efficiency_toys = int(config.efficiency_toys)  # 0=No, >1=Yes
+  efficiency_toys = str(config.efficiency_toys)  # 0=No, >1=Yes
 
 ### EWK CORR
 syst_ewk_Alcaraz = 0  # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
@@ -120,9 +120,9 @@ if(hasattr(config, 'MuonCorrAsDATA')):
 WMassNSteps = "5"
 if(hasattr(config, 'WMassNSteps')):
   WMassNSteps = str(config.WMassNSteps)  # 0=No, >1=Yes
-WlikeCharge = 1
-if(hasattr(config, 'WlikeCharge')):
-  WlikeCharge = int(config.WlikeCharge)  # 0=No, >1=Yes
+RemoveWlikePosNegOverlap = 1
+if(hasattr(config, 'RemoveWlikePosNegOverlap')):
+  RemoveWlikePosNegOverlap = int(config.RemoveWlikePosNegOverlap)  # 0=No, >1=Yes
 etaMaxMuons = "0.9"
 if(hasattr(config, 'etaMaxMuons')):
   etaMaxMuons = str(config.etaMaxMuons)  # 0=No, >1=Yes
@@ -134,7 +134,7 @@ if(hasattr(config, 'useRecoilCorr')):
 
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0
 if(hasattr(config, 'RecoilCorrVarDiagoParU1orU2fromDATAorMC')):
-  RecoilCorrVarDiagoParU1orU2fromDATAorMC = int(config.RecoilCorrVarDiagoParU1orU2fromDATAorMC)  # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC) -- 13: RECOIL TOYS
+  RecoilCorrVarDiagoParU1orU2fromDATAorMC = int(config.RecoilCorrVarDiagoParU1orU2fromDATAorMC)  # 0=No, >1=Yes
 RecoilCorrVarDiagoParSigmas = 0
 if(hasattr(config, 'RecoilCorrVarDiagoParSigmas')):
   RecoilCorrVarDiagoParSigmas = int(config.RecoilCorrVarDiagoParSigmas)  # 0=No, >1=Yes
@@ -156,12 +156,12 @@ runWanalysis = 0
 runZanalysis = config.runZanalysis
 controlplots = 0
 if hasattr(config, 'controlplots'):
-  controlplots = int(config.controlplots)
+  controlplots = str(config.controlplots)
 
 noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0  # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 if hasattr(config, 'recreateSubPrograms'):
-  recreateSubPrograms = int(config.recreateSubPrograms)
+  recreateSubPrograms = str(config.recreateSubPrograms)
 
 mergeSigEWKbkg = config.mergeSigEWKbkg
 mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
@@ -186,9 +186,6 @@ if hasattr(config, 'fitDATALIKEorDATA'):
 runClosureTestLikeLihoodRatio = 0
 if hasattr(config, 'runClosureTestLikeLihoodRatio'):
   runClosureTestLikeLihoodRatio = config.runClosureTestLikeLihoodRatio
-only_recreate_sh_scripts = 0
-if hasattr(config, 'only_recreate_sh_scripts'):
-  only_recreate_sh_scripts = config.only_recreate_sh_scripts
 
 mergeResults = 0
 if hasattr(config, 'mergeResults'):
@@ -241,7 +238,7 @@ def batch_job_is_running(jobname,chunk):
   jobname = jobname+"["+chunk+"]"
   if jobname in job_running:
     return True
-  else:
+  else: 
     return False
 
 def file_exists_and_is_not_empty(fpath):
@@ -289,9 +286,9 @@ and int(RecoilCorrVarDiagoParSigmas) == 0 :
   print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
   sys.exit(1)
 
-if (int(WlikeCharge) != 1) and (int(WlikeCharge) != -1) :
-  print "ERROR: Asked for a Wlike of charge", WlikeCharge
-  print "Check the 'WlikeCharge' variable"
+if (int(RemoveWlikePosNegOverlap) != 0) and (int(RemoveWlikePosNegOverlap) != 1) :
+  print "ERROR: Asked for a Wlike of charge", RemoveWlikePosNegOverlap
+  print "Check the 'RemoveWlikePosNegOverlap' variable"
   sys.exit(1)
 
 # Muon internal (Zanalisys wants them this way)
@@ -316,10 +313,10 @@ if (int(efficiency_toys) > 0) and not ((int(useEffSF) >= 13) and (int(useEffSF) 
 
 outfolder_name = outfolder_prefix
 
-if (int(WlikeCharge) == 1):
-  outfolder_name+="_muPos"
+if (int(RemoveWlikePosNegOverlap) == 1):
+  outfolder_name+="_noOverlap"
 else:
-  outfolder_name+="_muNeg"
+  outfolder_name+="_Overlap"
 
 if(int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_pfmet";
@@ -368,28 +365,25 @@ if(int(useRecoilCorr)>0):
     outfolder_name+="_toMad";
   if(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)>0):
     RecoilCorrVarDiagoParBlock = int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)
-    if(int(RecoilCorrVarDiagoParBlock)==13):
-        outfolder_name+="_RecoilToys";
+    if(int(RecoilCorrVarDiagoParBlock)<7):
+      outfolder_name+="_Rap1";
     else:
-      if(int(RecoilCorrVarDiagoParBlock)<7):
-        outfolder_name+="_Rap1";
-      else:
-        RecoilCorrVarDiagoParBlock = RecoilCorrVarDiagoParBlock - 6
-        outfolder_name+="_Rap2";
-      if  (int(RecoilCorrVarDiagoParBlock)==1):
-        outfolder_name+="_U1Datap1";
-      elif(int(RecoilCorrVarDiagoParBlock)==2):
-        outfolder_name+="_U1Datap2";
-      elif(int(RecoilCorrVarDiagoParBlock)==3):
-        outfolder_name+="_U2Data";
-      elif(int(RecoilCorrVarDiagoParBlock)==4):
-        outfolder_name+="_U1MCp1";
-      elif(int(RecoilCorrVarDiagoParBlock)==5):
-        outfolder_name+="_U1MCp2";
-      elif(int(RecoilCorrVarDiagoParBlock)==6):
-        outfolder_name+="_U2MC";
-      if  (int(RecoilCorrVarDiagoParSigmas)!=0):
-        outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
+      RecoilCorrVarDiagoParBlock = RecoilCorrVarDiagoParBlock - 6
+      outfolder_name+="_Rap2";
+    if  (int(RecoilCorrVarDiagoParBlock)==1):
+      outfolder_name+="_U1Datap1";
+    elif(int(RecoilCorrVarDiagoParBlock)==2):
+      outfolder_name+="_U1Datap2";
+    elif(int(RecoilCorrVarDiagoParBlock)==3):
+      outfolder_name+="_U2Data";
+    elif(int(RecoilCorrVarDiagoParBlock)==4):
+      outfolder_name+="_U1MCp1";
+    elif(int(RecoilCorrVarDiagoParBlock)==5):
+      outfolder_name+="_U1MCp2";
+    elif(int(RecoilCorrVarDiagoParBlock)==6):
+      outfolder_name+="_U2MC";
+    if  (int(RecoilCorrVarDiagoParSigmas)!=0):
+      outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
 if(int(useEffSF)==1):    outfolder_name+="_EffSFCorr";
 if(int(useEffSF)>=2):    outfolder_name+="_EffHeinerSFCorr";
@@ -523,12 +517,10 @@ fZana_str = [
   [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",2085]
 ];
 
-first_analysis_run = False
 if not os.path.exists("JobOutputs/"+outfolder_name):
   print "Out folder doesn't exists, making directory"
   print "JobOutputs/"+outfolder_name
   os.makedirs("JobOutputs/"+outfolder_name)
-  first_analysis_run = True
 
 print "Copying script over:"
 print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name
@@ -579,7 +571,7 @@ if(runWanalysis or runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.h from includes/common.h"
     shutil.copyfile("includes/common.h", "JobOutputs/"+outfolder_name+"/common.h");
     # Edit template
-    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+str(efficiency_toys)+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
+    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+efficiency_toys+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RemoveWlikePosNegOverlap)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
   print ""
 
@@ -592,21 +584,21 @@ if(runWanalysis or runZanalysis):
     # Copy Wanalysis.C in the dest folder (it has some parameters)
     shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C")
     if(useLHAPDF):
-      print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
     else:
-      print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
 
   if runZanalysis and (recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o")):
     # Copy Zanalysis.C in the dest folder (it has some parameters)
     shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
     if(useLHAPDF):
-      print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
     else:
-      print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
   
   for i in range(0, nsamples):
 
@@ -703,7 +695,7 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if first_analysis_run or (not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Wanalysis_"+outfolder_name+"_"+sample[i],str(chunk))):
+          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Wanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
             # Create script if needed
             if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis_"+str(chunk)+".sh"):
               text_file = open("runWanalysis_"+str(chunk)+".sh", "w")
@@ -753,6 +745,8 @@ if(runWanalysis or runZanalysis):
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
+          if int(useRecoilCorr)==3:
+            nevents = nevents*10
           if int(useRecoilCorr)>0 and int(RecoilCorrVarDiagoParSigmas)!=0:
             nevents = nevents/3
           if (int(MuonCorrKalmanNvarsNsigma)!=0):
@@ -772,7 +766,7 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if first_analysis_run or (not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk))):
+          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
             # Create scripts if needed
             if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis_"+str(chunk)+".sh"):
               text_file = open("runZanalysis_"+str(chunk)+".sh", "w")
@@ -865,7 +859,7 @@ if(runClosureTestLikeLihoodRatio):
             "eval `scramv1 runtime -sh`;"
             "cd -;"
             "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
-            "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(only_recreate_sh_scripts)+")\'")
+            "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
   # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
   # a = proc.communicate()[0].rstrip().split('\n')
   # print a
